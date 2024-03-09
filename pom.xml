@@ -39,10 +39,8 @@
 
     <developers>
         <developer>
-            <name>xiaofuge</name>
-            <email>184172133@qq.com</email>
-            <organization>fuzhengwei</organization>
-            <organizationUrl>https://github.com/fuzhengwei</organizationUrl>
+            <name>hzq</name>
+            <email>1462478547@qq.com</email>
         </developer>
     </developers>
 
@@ -72,7 +70,7 @@
             <dependency>
                 <groupId>mysql</groupId>
                 <artifactId>mysql-connector-java</artifactId>
-                <version>8.0.22</version>
+                <version>8.0.32</version>
             </dependency>
             <dependency>
                 <groupId>com.alibaba</groupId>

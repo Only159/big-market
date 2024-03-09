@@ -4,6 +4,37 @@ SET FOREIGN_KEY_CHECKS = 0;
 CREATE database if NOT EXISTS `big_market` default character set utf8mb4 collate utf8mb4_0900_ai_ci;
 use `big_market`;
 -- ----------------------------
+-- Table structure for award
+-- ----------------------------
+DROP TABLE IF EXISTS `award`;
+CREATE TABLE `award`
+(
+    `id`           int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',
+    `award_id`     int(8)           NOT NULL COMMENT '抽奖奖品ID - 内部流转使用',
+    `award_key`    varchar(32)      NOT NULL COMMENT '奖品对接标识 - 每一个都是一个对应的发奖策略',
+    `award_config` varchar(32)      NOT NULL COMMENT '奖品配置信息',
+    `award_desc`   varchar(128)     NOT NULL COMMENT '奖品内容描述',
+    `create_time`  datetime         NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `update_time`  datetime         NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    PRIMARY KEY (`id`)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4;
+-- ----------------------------
+-- Records of strategy_award
+-- ----------------------------
+INSERT INTO `award` (`id`, `award_id`, `award_key`, `award_config`, `award_desc`)
+VALUES (1, 101, 'user_credit_random', '1,100', '用户积分【优先透彻规则范围，如果没有则走配置】'),
+       (2, 102, 'openai_use_count', '5', 'OpenAI 增加使用次数'),
+       (3, 103, 'openai_use_count', '10', 'OpenAI 增加使用次数'),
+       (4, 104, 'openai_use_count', '20', 'OpenAI 增加使用次数'),
+       (5, 105, 'openai_model', 'gpt-4', 'OpenAI 增加模型'),
+       (6, 106, 'openai_model', 'dall-e-2', 'OpenAI 增加模型'),
+       (7, 107, 'openai_model', 'dall-e-3', 'OpenAI 增加模型'),
+       (8, 108, 'openai_use_count', '100', 'OpenAI 增加使用次数'),
+       (9, 109, 'openai_model', 'gpt-4,dall-e-2,dall-e-3', 'OpenAI 增加模型');
+COMMIT;
+
+-- ----------------------------
 -- Table structure for strategy
 -- ----------------------------
 DROP TABLE IF EXISTS `strategy`;
@@ -70,7 +101,7 @@ DROP TABLE IF EXISTS `strategy_rule`;
 CREATE TABLE `strategy_rule`
 (
     `id`          bigint(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',
-    `strategy_id` int(8)              NOT NULL COMMENT '抽奖策略ID',
+    `strategy_id` bigint(8)           NOT NULL COMMENT '抽奖策略ID',
     `award_id`    int(8)                       DEFAULT NULL COMMENT '抽奖奖品ID【规则类型为策略，则不需要奖品ID】',
     `rule_type`   tinyint(1)          NOT NULL DEFAULT '0' COMMENT '抽象规则类型；1-策略规则、2-奖品规则',
     `rule_model`  varchar(16)         NOT NULL COMMENT '抽奖规则类型【rule_random - 随机值计算、rule_lock - 抽奖几次后解锁、rule_luck_award - 幸运奖(兜底奖品)】',
