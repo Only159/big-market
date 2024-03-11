@@ -1,6 +1,7 @@
 package cn.hzq.test.domain;
 
 import cn.hzq.domain.strategy.service.armory.IStrategyArmory;
+import cn.hzq.domain.strategy.service.armory.IStrategyDispatch;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,6 +22,8 @@ public class StrategyArmoryTest {
 
     @Resource
     private IStrategyArmory strategyArmory;
+    @Resource
+    private IStrategyDispatch strategyDispatch;
 
     /**
      * 策略ID；10001L、10002L 装配的时候创建策略表写入到 Redis Map 中
@@ -36,8 +39,14 @@ public class StrategyArmoryTest {
      */
     @Test
     public void test_getAssembleRandomVal() {
-        log.info("测试结果: {} - 奖品id值", strategyArmory.getRandomAwardId(10001L));
+        log.info("测试结果: {} - 奖品id值", strategyDispatch.getRandomAwardId(10001L));
 
+    }
+    @Test
+    public void test_getAssembleRandomVal_ruleWeightValue() {
+        log.info("测试结果: {} - 4000策略奖品id值", strategyDispatch.getRandomAwardId(10001L,"4000"));
+        log.info("测试结果: {} - 5000策略奖品id值", strategyDispatch.getRandomAwardId(10001L,"5000"));
+        log.info("测试结果: {} - 6000策略奖品id值", strategyDispatch.getRandomAwardId(10001L,"6000"));
     }
 
 }

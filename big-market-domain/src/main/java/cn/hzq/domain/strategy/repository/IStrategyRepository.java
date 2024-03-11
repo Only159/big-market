@@ -1,6 +1,8 @@
 package cn.hzq.domain.strategy.repository;
 
 import cn.hzq.domain.strategy.model.entity.StrategyAwardEntity;
+import cn.hzq.domain.strategy.model.entity.StrategyEntity;
+import cn.hzq.domain.strategy.model.entity.StrategyRuleEntity;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -14,9 +16,14 @@ import java.util.List;
 public interface IStrategyRepository {
     List<StrategyAwardEntity> queryStrategyAwardList(Long strategyId);
 
-    void storeStrategyAwardSearchRateTable(Long strategyId, BigDecimal rateRange, HashMap<Integer, Integer> strategyAwardSearchRateTable);
+    void storeStrategyAwardSearchRateTable(String key, BigDecimal rateRange, HashMap<Integer, Integer> strategyAwardSearchRateTable);
 
     int getRateRange(Long strategyId);
+    int getRateRange(String  key);
 
-    Integer getStrategyAwardAssemble(Long strategyId, int rateKey);
+    Integer getStrategyAwardAssemble(String key, int rateKey);
+
+    StrategyEntity queryStrategyEntityByStrategyId(Long strategyId);
+
+    StrategyRuleEntity queryStrategyRule(Long strategyId, String ruleModel);
 }
