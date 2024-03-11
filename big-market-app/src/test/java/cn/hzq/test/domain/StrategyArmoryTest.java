@@ -12,7 +12,7 @@ import javax.annotation.Resource;
 /**
  * @author 黄照权
  * @Date 2024/3/11
- * @Description
+ * @Description 策略领域测试
  **/
 @Slf4j
 @RunWith(SpringRunner.class)
@@ -22,29 +22,22 @@ public class StrategyArmoryTest {
     @Resource
     private IStrategyArmory strategyArmory;
 
+    /**
+     * 策略ID；10001L、10002L 装配的时候创建策略表写入到 Redis Map 中
+     */
     @Test
-    public void  test_strategyArmory(){
-        strategyArmory.assembleLotteryStrategy(10001L);
+    public void test_strategyArmory() {
+        boolean success = strategyArmory.assembleLotteryStrategy(10001L);
+        log.info("测试结果：{}", success);
     }
 
+    /**
+     * 从装配的策略中随机获取奖品ID值
+     */
     @Test
-    public void  test_getAssembleRandomVal(){
-        log.info("测试结果: {} - 奖品id值",strategyArmory.getRandomAwardId(10001L));
-        log.info("测试结果: {} - 奖品id值",strategyArmory.getRandomAwardId(10001L));
-        log.info("测试结果: {} - 奖品id值",strategyArmory.getRandomAwardId(10001L));
-        log.info("测试结果: {} - 奖品id值",strategyArmory.getRandomAwardId(10001L));
-        log.info("测试结果: {} - 奖品id值",strategyArmory.getRandomAwardId(10001L));
-        log.info("测试结果: {} - 奖品id值",strategyArmory.getRandomAwardId(10001L));
-        log.info("测试结果: {} - 奖品id值",strategyArmory.getRandomAwardId(10001L));
-        log.info("测试结果: {} - 奖品id值",strategyArmory.getRandomAwardId(10001L));
-        log.info("测试结果: {} - 奖品id值",strategyArmory.getRandomAwardId(10001L));
-        log.info("测试结果: {} - 奖品id值",strategyArmory.getRandomAwardId(10001L));
-        log.info("测试结果: {} - 奖品id值",strategyArmory.getRandomAwardId(10001L));
-        log.info("测试结果: {} - 奖品id值",strategyArmory.getRandomAwardId(10001L));
-        log.info("测试结果: {} - 奖品id值",strategyArmory.getRandomAwardId(10001L));
-        log.info("测试结果: {} - 奖品id值",strategyArmory.getRandomAwardId(10001L));
-        log.info("测试结果: {} - 奖品id值",strategyArmory.getRandomAwardId(10001L));
-        log.info("测试结果: {} - 奖品id值",strategyArmory.getRandomAwardId(10001L));
+    public void test_getAssembleRandomVal() {
+        log.info("测试结果: {} - 奖品id值", strategyArmory.getRandomAwardId(10001L));
+
     }
 
 }
