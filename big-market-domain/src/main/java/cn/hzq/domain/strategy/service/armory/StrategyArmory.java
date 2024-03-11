@@ -14,7 +14,7 @@ import java.util.*;
 /**
  * @author 黄照权
  * @Date 2024/3/11
- * @Description 策略装配库（兵工厂），负责初始化策略计算
+ * @Description 策略装配库(兵工厂)，负责初始化策略计算
  **/
 @Service
 @Slf4j
@@ -23,7 +23,7 @@ public class StrategyArmory implements IStrategyArmory {
     private IStrategyRepository repository;
 
     @Override
-    public void assembleLotteryStrategy(Long strategyId) {
+    public boolean assembleLotteryStrategy(Long strategyId) {
         // 1、查询策略配置
         List<StrategyAwardEntity> strategyAwardEntities = repository.queryStrategyAwardList(strategyId);
 
@@ -63,6 +63,7 @@ public class StrategyArmory implements IStrategyArmory {
 
         //存到redis
         repository.storeStrategyAwardSearchRateTable(strategyId, rateRange, shuffleStrategyAwardSearchRateTable);
+        return true;
     }
 
     @Override
