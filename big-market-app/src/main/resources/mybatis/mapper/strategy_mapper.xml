@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.hzq.infrastructure.persistent.dao.IStrategyDao">
 
-    <resultMap id="dateMap" type="cn.hzq.infrastructure.persistent.po.Strategy">
+    <resultMap id="dataMap" type="cn.hzq.infrastructure.persistent.po.Strategy">
         <id column="id" property="id"/>
         <result column="strategy_id" property="strategyId"/>
         <result column="strategy_desc" property="strategyDesc"/>
@@ -11,7 +11,7 @@
         <result column="update_time" property="updateTime"/>
     </resultMap>
 
-    <select id="queryStrategyList" resultMap="dateMap">
+    <select id="queryStrategyList" resultMap="dataMap">
         select strategy_id
         from strategy
         limit 10
