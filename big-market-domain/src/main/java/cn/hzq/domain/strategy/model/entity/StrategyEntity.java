@@ -18,19 +18,25 @@ import org.apache.commons.lang3.StringUtils;
 @AllArgsConstructor
 @NoArgsConstructor
 public class StrategyEntity {
-    /**抽奖策略ID*/
+    /**
+     * 抽奖策略ID
+     */
     private Long strategyId;
-    /**抽奖策略描述*/
+    /**
+     * 抽奖策略描述
+     */
     private String strategyDesc;
-    /**策略模型*/
+    /**
+     * 策略模型
+     */
     private String ruleModels;
 
-    public String[] ruleModels(){
+    public String[] ruleModels() {
         if (StringUtils.isBlank(ruleModels)) return null;
         return ruleModels.split(Constants.SPLIT);
     }
 
-    public String getRuleWeight(){
+    public String getRuleWeight() {
         String[] ruleModels = this.ruleModels();
         for (String ruleModel : ruleModels) {
             if ("rule_weight".equals(ruleModel)) return ruleModel;

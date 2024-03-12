@@ -5,36 +5,36 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
-
 /**
  * @author 黄照权
- * @Date 2024/3/11
- * @Description 策略奖品实体
+ * @Date 2024/3/13
+ * @Description 抽奖奖品实体
  **/
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class StrategyAwardEntity {
+public class RaffleAwardEntity {
+
     /**
-     * 抽奖策略ID
+     * 策略ID
      */
     private Long strategyId;
     /**
-     * 抽奖奖品ID - 内部流转使用
+     * 奖品ID
      */
     private Integer awardId;
     /**
-     * 奖品库存总量
+     * 奖品对接标识 - 每一个都是一个对应的发奖策略
      */
-    private Integer awardCount;
+    private String awardKey;
     /**
-     * 奖品库存剩
+     * 奖品配置信息
      */
-    private Integer awardCountSurplus;
+    private String awardConfig;
     /**
-     * 奖品中奖概率
+     * 奖品内容描述
      */
-    private BigDecimal awardRate;
+    private String awardDesc;
+
 }
