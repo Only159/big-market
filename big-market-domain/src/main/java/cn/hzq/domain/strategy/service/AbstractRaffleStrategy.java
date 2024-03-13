@@ -3,15 +3,12 @@ package cn.hzq.domain.strategy.service;
 import cn.hzq.domain.strategy.model.entity.RaffleAwardEntity;
 import cn.hzq.domain.strategy.model.entity.RaffleFactorEntity;
 import cn.hzq.domain.strategy.model.entity.RuleActionEntity;
-import cn.hzq.domain.strategy.model.entity.StrategyEntity;
 import cn.hzq.domain.strategy.model.valobj.RuleLogicCheckTypeVO;
-import cn.hzq.domain.strategy.model.valobj.StrategyAwardRuleModelVo;
+import cn.hzq.domain.strategy.model.valobj.StrategyAwardRuleModelVO;
 import cn.hzq.domain.strategy.repository.IStrategyRepository;
-import cn.hzq.domain.strategy.service.IRaffleStrategy;
 import cn.hzq.domain.strategy.service.armory.IStrategyDispatch;
 import cn.hzq.domain.strategy.service.rule.chain.ILogicChain;
 import cn.hzq.domain.strategy.service.rule.chain.factory.DefaultChainFactory;
-import cn.hzq.domain.strategy.service.rule.filter.factory.DefaultLogicFactory;
 import cn.hzq.types.enums.ResponseCode;
 import cn.hzq.types.exception.AppException;
 import lombok.extern.slf4j.Slf4j;
@@ -51,7 +48,7 @@ public abstract class AbstractRaffleStrategy implements IRaffleStrategy {
         Integer awardId = logicChain.logic(userId, strategyId);
 
         // 3. 查询奖品规则【抽奖中(拿到奖品ID时，过滤规则)，抽奖后（扣减完奖品库存后过滤），抽奖中拦截和无库存则走兜底奖品】
-        StrategyAwardRuleModelVo strategyAwardRuleModelVo =
+        StrategyAwardRuleModelVO strategyAwardRuleModelVo =
                 repository.queryStrategyAwardListRuleModel(strategyId,awardId);
 
         // 4. 抽奖中 - 规则过滤

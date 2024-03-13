@@ -1,16 +1,10 @@
 package cn.hzq.test.domain;
 
-import cn.hzq.domain.strategy.model.entity.RaffleAwardEntity;
-import cn.hzq.domain.strategy.model.entity.RaffleFactorEntity;
-import cn.hzq.domain.strategy.service.IRaffleStrategy;
 import cn.hzq.domain.strategy.service.armory.IStrategyArmory;
 import cn.hzq.domain.strategy.service.rule.chain.ILogicChain;
 import cn.hzq.domain.strategy.service.rule.chain.factory.DefaultChainFactory;
 import cn.hzq.domain.strategy.service.rule.chain.impl.RuleWeightLogicChain;
-import cn.hzq.domain.strategy.service.rule.filter.impl.RuleLockLogicFilter;
-import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -27,7 +21,7 @@ import javax.annotation.Resource;
 @Slf4j
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class ILogicChainTest {
+public class LogicChainTest {
 
     @Resource
     private IStrategyArmory strategyArmory;

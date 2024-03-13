@@ -3,7 +3,7 @@ package cn.hzq.domain.strategy.repository;
 import cn.hzq.domain.strategy.model.entity.StrategyAwardEntity;
 import cn.hzq.domain.strategy.model.entity.StrategyEntity;
 import cn.hzq.domain.strategy.model.entity.StrategyRuleEntity;
-import cn.hzq.domain.strategy.model.valobj.StrategyAwardRuleModelVo;
+import cn.hzq.domain.strategy.model.valobj.StrategyAwardRuleModelVO;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -33,5 +33,5 @@ public interface IStrategyRepository {
 
     String queryStrategyRuleValue(Long strategyId, String ruleModel);
 
-    StrategyAwardRuleModelVo queryStrategyAwardListRuleModel(Long strategyId, Integer awardId);
+    StrategyAwardRuleModelVO queryStrategyAwardListRuleModel(Long strategyId, Integer awardId);
 }

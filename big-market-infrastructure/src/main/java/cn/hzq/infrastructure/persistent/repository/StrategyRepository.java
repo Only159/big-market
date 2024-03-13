@@ -3,7 +3,7 @@ package cn.hzq.infrastructure.persistent.repository;
 import cn.hzq.domain.strategy.model.entity.StrategyAwardEntity;
 import cn.hzq.domain.strategy.model.entity.StrategyEntity;
 import cn.hzq.domain.strategy.model.entity.StrategyRuleEntity;
-import cn.hzq.domain.strategy.model.valobj.StrategyAwardRuleModelVo;
+import cn.hzq.domain.strategy.model.valobj.StrategyAwardRuleModelVO;
 import cn.hzq.domain.strategy.repository.IStrategyRepository;
 import cn.hzq.infrastructure.persistent.dao.IStrategyAwardDao;
 import cn.hzq.infrastructure.persistent.dao.IStrategyDao;
@@ -140,11 +140,11 @@ public class StrategyRepository implements IStrategyRepository {
     }
 
     @Override
-    public StrategyAwardRuleModelVo queryStrategyAwardListRuleModel(Long strategyId, Integer awardId) {
+    public StrategyAwardRuleModelVO queryStrategyAwardListRuleModel(Long strategyId, Integer awardId) {
         StrategyAward strategyAward = new StrategyAward();
         strategyAward.setStrategyId(strategyId);
         strategyAward.setAwardId(awardId);
         String ruleModels = strategyAwardDao.queryStrategyAwardRuleModels(strategyAward);
-        return StrategyAwardRuleModelVo.builder().ruleModels(ruleModels).build();
+        return StrategyAwardRuleModelVO.builder().ruleModels(ruleModels).build();
     }
 }

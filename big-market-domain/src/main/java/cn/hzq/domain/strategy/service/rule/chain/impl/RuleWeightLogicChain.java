@@ -13,7 +13,7 @@ import java.util.*;
 /**
  * @author 黄照权
  * @Date 2024/3/13
- * @Description 权重
+ * @Description 权重抽奖责任链
  **/
 @Component("rule_weight")
 @Slf4j
