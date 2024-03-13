@@ -1,8 +1,8 @@
-package cn.hzq.domain.strategy.service.rule.factory;
+package cn.hzq.domain.strategy.service.rule.filter.factory;
 
 import cn.hzq.domain.strategy.model.entity.RuleActionEntity;
 import cn.hzq.domain.strategy.service.annotation.LogicStrategy;
-import cn.hzq.domain.strategy.service.rule.ILogicFilter;
+import cn.hzq.domain.strategy.service.rule.filter.ILogicFilter;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.stereotype.Service;

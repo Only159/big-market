@@ -1,4 +1,4 @@
-package cn.hzq.domain.strategy.service.rule;
+package cn.hzq.domain.strategy.service.rule.filter;
 
 import cn.hzq.domain.strategy.model.entity.RuleActionEntity;
 import cn.hzq.domain.strategy.model.entity.RuleMatterEntity;
