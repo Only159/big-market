@@ -31,10 +31,12 @@ public class RuleWeightLogicChain extends AbstractLogicChain {
         //查询权重配置信息
         String ruleValue = repository.queryStrategyRuleValue(strategyId, ruleModel());
 
-        // 1. 根据用户ID查询用户抽奖消耗的积分 目前写死，后续需要从数据库查 TODO：
-
+        // 1. 解析权重规则值 4000:102,103,104,105 拆解为；4000 -> 4000:102,103,104,105 便于比对判断
         Map<Long, List<Integer>> analyticalValueGroup = getAnalyticalValue(ruleValue);
-        if (null == analyticalValueGroup || analyticalValueGroup.isEmpty()) return  null;
+        if (null == analyticalValueGroup || analyticalValueGroup.isEmpty()) {
+            log.warn("抽奖责任链-权重告警【策略配置权重，但ruleValue未配置相应值】 userId: {} strategyId: {} ruleModel: {}", userId, strategyId, ruleModel());
+            return next().logic(userId, strategyId);
+        }
 
         // 2. 转换Keys值，并默认排序
         List<Long> analyticalSortedKeys = new ArrayList<>(analyticalValueGroup.keySet());
