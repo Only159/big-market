@@ -3,6 +3,7 @@ package cn.hzq.domain.strategy.repository;
 import cn.hzq.domain.strategy.model.entity.StrategyAwardEntity;
 import cn.hzq.domain.strategy.model.entity.StrategyEntity;
 import cn.hzq.domain.strategy.model.entity.StrategyRuleEntity;
+import cn.hzq.domain.strategy.model.valobj.RuleTreeVO;
 import cn.hzq.domain.strategy.model.valobj.StrategyAwardRuleModelVO;
 
 import java.math.BigDecimal;
@@ -12,7 +13,7 @@ import java.util.List;
 /**
  * @author 黄照权
  * @Date 2024/3/11
- * @Description 策略仓储接口
+ * @Description 策略服务仓储接口
  **/
 public interface IStrategyRepository {
     List<StrategyAwardEntity> queryStrategyAwardList(Long strategyId);
@@ -33,5 +34,13 @@ public interface IStrategyRepository {
 
     String queryStrategyRuleValue(Long strategyId, String ruleModel);
 
-    StrategyAwardRuleModelVO queryStrategyAwardListRuleModel(Long strategyId, Integer awardId);
+    StrategyAwardRuleModelVO queryStrategyAwardListRuleModelVO(Long strategyId, Integer awardId);
+
+    /**
+     * 根据规则树ID，查询树结构信息
+     *
+     * @param treeId 规则树ID
+     * @return 树结构信息
+     */
+    RuleTreeVO queryRuleTreeVOByTreeId(String treeId);
 }

@@ -1,5 +1,7 @@
 package cn.hzq.domain.strategy.service.rule.chain;
 
+import cn.hzq.domain.strategy.service.rule.chain.factory.DefaultChainFactory;
+
 /**
  * @author 黄照权
  * @Date 2024/3/13
@@ -14,6 +16,6 @@ public interface ILogicChain extends ILogicChainArmory{
      * @Date 2024/3/13
      * @Description 责任链接口
      */
-    Integer logic(String userId, Long strategyId);
+    DefaultChainFactory.StrategyAwardVO logic(String userId, Long strategyId);
 
 }

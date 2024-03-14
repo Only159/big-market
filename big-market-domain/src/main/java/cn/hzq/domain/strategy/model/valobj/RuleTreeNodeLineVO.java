@@ -18,7 +18,7 @@ public class RuleTreeNodeLineVO {
     /**
      * 规则树ID
      */
-    private Integer treeId;
+    private String treeId;
     /**
      *  节点从哪开始 From 【值为规则Key】
      */
