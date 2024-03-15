@@ -40,9 +40,9 @@ public class DecisionTreeEngine implements IDecisionTreeEngine {
         while (null != nextNode){
             // 获取决策节点
             ILogicTreeNode logicTreeNode = logicTreeNodeGroup.get(ruleTreeNodeVO.getRuleKey());
-
+            String ruleValue = ruleTreeNodeVO.getRuleValue();
             // 决策节点计算
-            DefaultTreeFactory.TreeActionEntity logicEntity = logicTreeNode.logic(userId, strategyId, awardId);
+            DefaultTreeFactory.TreeActionEntity logicEntity = logicTreeNode.logic(userId, strategyId, awardId,ruleValue);
             RuleLogicCheckTypeVO ruleLogicCheckTypeVO = logicEntity.getRuleLogicCheckType();
             strategyAwardData = logicEntity.getStrategyAwardVO();
             log.info("决策树引擎【{}】treeId:{} node:{} code:{}", ruleTreeVO.getTreeName(), ruleTreeVO.getTreeId(), nextNode, ruleLogicCheckTypeVO.getCode());
@@ -55,20 +55,36 @@ public class DecisionTreeEngine implements IDecisionTreeEngine {
         //返回最终结果
         return  strategyAwardData;
     }
+
+    /**
+     * 寻找下一个节点
+     * @param matterValue 事件结果值【放行/接管】
+     * @param ruleTreeNodeLineVOList 节点连线列表
+     * @return 下一个节点key
+     */
     private String nextNode(String matterValue, List<RuleTreeNodeLineVO> ruleTreeNodeLineVOList){
+        //规则节点连线为空 代表没有下级节点
         if (null == ruleTreeNodeLineVOList || ruleTreeNodeLineVOList.isEmpty()) return null;
+        //通过规则节点连线找下一个节点
         for (RuleTreeNodeLineVO nodeLine : ruleTreeNodeLineVOList) {
             if (decisionLogic(matterValue,nodeLine)){
                 return nodeLine.getRuleNodeTo();
             }
         }
-        throw new RuntimeException("决策树引擎，nextNode 计算失败，未找到可执行节点！");
+        //throw new RuntimeException("决策树引擎，nextNode 计算失败，未找到可执行节点！");
+        return null;
     }
 
-
+    /**
+     * 判断当前节点连线的事件值是否与传递的事件结果值相同
+     * @param matterValue 事件结果值【放行/接管】
+     * @param nodeLine 节点连线
+     * @return boolean
+     */
     public boolean decisionLogic(String matterValue, RuleTreeNodeLineVO nodeLine){
         switch (nodeLine.getRuleLimitType()){
             case EQUAL:
+                //通过上一级的结果【放行/接管】通过规则连线找下一个节点
                 return matterValue.equals(nodeLine.getRuleLimitValue().getCode());
             // TODO 后续实现
             case GT:

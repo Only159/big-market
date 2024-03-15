@@ -1,5 +1,6 @@
 package cn.hzq.domain.strategy.service.raffle;
 
+import cn.hzq.domain.strategy.model.entity.StrategyAwardStockKeyVO;
 import cn.hzq.domain.strategy.model.valobj.RuleTreeVO;
 import cn.hzq.domain.strategy.model.valobj.StrategyAwardRuleModelVO;
 import cn.hzq.domain.strategy.repository.IStrategyRepository;
@@ -43,7 +44,7 @@ public class DefaultRaffleStrategy extends AbstractRaffleStrategy {
                     .awardId(awardId)
                     .build();
         }
-        // TODO 存在bug 奖品有多个配置 规则树只根据treeId查询单个
+        //查询规则树
         RuleTreeVO ruleTreeVO = repository.queryRuleTreeVOByTreeId(strategyAwardRuleModelVO.getRuleModels());
         //配置规则，没有配置规则明细信息
         if (null == ruleTreeVO) {
@@ -53,6 +54,16 @@ public class DefaultRaffleStrategy extends AbstractRaffleStrategy {
         IDecisionTreeEngine iDecisionTreeEngine = defaultTreeFactory.openLogicTree(ruleTreeVO);
         return iDecisionTreeEngine.process(userId, strategyId, awardId);
 
+    }
+
+    @Override
+    public StrategyAwardStockKeyVO takeQueueValue() throws InterruptedException {
+        return repository.takeQueueValue();
+    }
+
+    @Override
+    public void updateStrategyAwardStock(Long strategyId, Integer awardId) {
+        repository.updateStrategyAwardStock(strategyId,awardId);
     }
 }
 

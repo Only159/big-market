@@ -4,6 +4,7 @@ import cn.hzq.domain.strategy.model.entity.StrategyAwardEntity;
 import cn.hzq.domain.strategy.model.entity.StrategyEntity;
 import cn.hzq.domain.strategy.model.entity.StrategyRuleEntity;
 import cn.hzq.domain.strategy.repository.IStrategyRepository;
+import cn.hzq.types.common.Constants;
 import cn.hzq.types.enums.ResponseCode;
 import cn.hzq.types.exception.AppException;
 import lombok.extern.slf4j.Slf4j;
@@ -33,7 +34,14 @@ public class StrategyArmoryDispatch implements IStrategyArmory, IStrategyDispatc
         List<StrategyAwardEntity> strategyAwardEntities = repository.queryStrategyAwardList(strategyId);
         assembleLotteryStrategy(String.valueOf(strategyId), strategyAwardEntities);
 
-        // 2. 权重策略配置 - 适用与rule_weight 权重规则配置
+        // 2. 缓存奖品库存【用于decr扣减库存使用】
+        for (StrategyAwardEntity strategyAward : strategyAwardEntities) {
+            Integer awardId = strategyAward.getAwardId();
+            Integer awardCount = strategyAward.getAwardCount();
+            cacheStrategyAwardCount(strategyId, awardId, awardCount);
+        }
+        // 3.1 默认装配置【全量抽奖概率】
+        // 2.2 权重策略配置 - 适用与rule_weight 权重规则配置
         StrategyEntity strategyEntity = repository.queryStrategyEntityByStrategyId(strategyId);
         String ruleWeight = strategyEntity.getRuleWeight();
         if (ruleWeight == null) return true;
@@ -47,13 +55,26 @@ public class StrategyArmoryDispatch implements IStrategyArmory, IStrategyDispatc
         for (String key : keys) {
             List<Integer> ruleWeightValues = ruleWeightValueMap.get(key);
             ArrayList<StrategyAwardEntity> strategyAwardEntitiesClone = new ArrayList<>(strategyAwardEntities);
-            strategyAwardEntitiesClone.removeIf(entity ->!ruleWeightValues.contains(entity.getAwardId()));
-            assembleLotteryStrategy(String.valueOf(strategyId).concat("_").concat(key),strategyAwardEntitiesClone);
+            strategyAwardEntitiesClone.removeIf(entity -> !ruleWeightValues.contains(entity.getAwardId()));
+            assembleLotteryStrategy(String.valueOf(strategyId).concat("_").concat(key), strategyAwardEntitiesClone);
         }
 
 
         return true;
     }
+
+    /**
+     * 缓存奖品库存到Redis
+     *
+     * @param strategyId 策略ID
+     * @param awardId    奖品ID
+     * @param awardCount 奖品库存
+     */
+    private void cacheStrategyAwardCount(Long strategyId, Integer awardId, Integer awardCount) {
+        String cacheKey = Constants.RedisKey.STRATEGY_AWARD_COUNT_KEY + strategyId + Constants.UNDERLINE + awardId;
+        repository.cacheStrategyAwardCount(cacheKey, awardCount);
+    }
+
     /**
      * 计算公式；
      * 1. 找到范围内最小的概率值，比如 0.1、0.02、0.003，需要找到的值是 0.003
@@ -95,13 +116,14 @@ public class StrategyArmoryDispatch implements IStrategyArmory, IStrategyDispatc
         repository.storeStrategyAwardSearchRateTable(key, rateRange, shuffleStrategyAwardSearchRateTable);
 
     }
+
     /**
      * 转换计算，只根据小数位来计算。如【0.01返回100】、【0.009返回1000】、【0.0018返回10000】
      */
-    private double convert(double min){
+    private double convert(double min) {
         double current = min;
         double max = 1;
-        while (current < 1){
+        while (current < 1) {
             current = current * 10;
             max = max * 10;
         }
@@ -123,5 +145,11 @@ public class StrategyArmoryDispatch implements IStrategyArmory, IStrategyDispatc
         int rateRange = repository.getRateRange(key);
         // 通过生成的随机值，获取概率值奖品查找表的结果
         return repository.getStrategyAwardAssemble(key, new SecureRandom().nextInt(rateRange));
+    }
+
+    @Override
+    public Boolean subtractionAwardStock(Long strategyId, Integer awardId) {
+        String cacheKey = Constants.RedisKey.STRATEGY_AWARD_COUNT_KEY + strategyId + Constants.UNDERLINE + awardId;
+        return repository.subtractionAwardStock(cacheKey);
     }
 }
