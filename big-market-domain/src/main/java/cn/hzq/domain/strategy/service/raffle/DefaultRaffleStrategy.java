@@ -1,10 +1,13 @@
 package cn.hzq.domain.strategy.service.raffle;
 
+import cn.hzq.domain.strategy.model.entity.StrategyAwardEntity;
 import cn.hzq.domain.strategy.model.entity.StrategyAwardStockKeyVO;
 import cn.hzq.domain.strategy.model.valobj.RuleTreeVO;
 import cn.hzq.domain.strategy.model.valobj.StrategyAwardRuleModelVO;
 import cn.hzq.domain.strategy.repository.IStrategyRepository;
 import cn.hzq.domain.strategy.service.AbstractRaffleStrategy;
+import cn.hzq.domain.strategy.service.IRaffleAward;
+import cn.hzq.domain.strategy.service.IRaffleStock;
 import cn.hzq.domain.strategy.service.armory.IStrategyDispatch;
 import cn.hzq.domain.strategy.service.rule.chain.ILogicChain;
 import cn.hzq.domain.strategy.service.rule.chain.factory.DefaultChainFactory;
@@ -13,6 +16,8 @@ import cn.hzq.domain.strategy.service.rule.tree.factory.engine.IDecisionTreeEngi
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * @author 黄照权
  * @Date 2024/3/13
@@ -20,7 +25,7 @@ import org.springframework.stereotype.Service;
  **/
 @Slf4j
 @Service
-public class DefaultRaffleStrategy extends AbstractRaffleStrategy {
+public class DefaultRaffleStrategy extends AbstractRaffleStrategy implements IRaffleAward ,IRaffleStock {
 
     public DefaultRaffleStrategy(IStrategyRepository repository, IStrategyDispatch strategyDispatch, DefaultChainFactory defaultChainFactory, DefaultTreeFactory defaultTreeFactory) {
         super(repository, strategyDispatch, defaultChainFactory, defaultTreeFactory);
@@ -64,6 +69,11 @@ public class DefaultRaffleStrategy extends AbstractRaffleStrategy {
     @Override
     public void updateStrategyAwardStock(Long strategyId, Integer awardId) {
         repository.updateStrategyAwardStock(strategyId,awardId);
+    }
+
+    @Override
+    public List<StrategyAwardEntity> queryRaffleStrategyAwardList(Long strategyId) {
+        return repository.queryStrategyAwardList(strategyId);
     }
 }
 

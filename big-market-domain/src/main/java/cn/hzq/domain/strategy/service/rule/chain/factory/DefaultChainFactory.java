@@ -25,6 +25,7 @@ public class DefaultChainFactory {
 
     /**
      * 通过策略Id 构建责任链
+     *
      * @param strategyId 策略ID
      * @return LogicChain
      */
@@ -46,6 +47,7 @@ public class DefaultChainFactory {
         current.appendNext(logicChainGroup.get("rule_default"));
         return logicChain;
     }
+
     @Data
     @Builder
     @AllArgsConstructor
@@ -63,15 +65,14 @@ public class DefaultChainFactory {
 
     @Getter
     @AllArgsConstructor
-    public enum LogicModel{
-        RULE_DEFAULT("rule_default","默认抽奖"),
-        RULE_BLACKLIST("rule_blacklist","黑名单抽奖"),
-        RULE_WEIGHT("rule_weight","权重规则抽奖"),
+    public enum LogicModel {
+        RULE_DEFAULT("rule_default", "默认抽奖"),
+        RULE_BLACKLIST("rule_blacklist", "黑名单抽奖"),
+        RULE_WEIGHT("rule_weight", "权重规则抽奖"),
         ;
         private final String code;
         private final String info;
     }
-
 
 
 }

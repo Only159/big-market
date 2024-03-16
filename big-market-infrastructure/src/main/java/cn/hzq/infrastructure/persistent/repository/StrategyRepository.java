@@ -10,6 +10,8 @@ import cn.hzq.infrastructure.persistent.dao.*;
 import cn.hzq.infrastructure.persistent.po.*;
 import cn.hzq.infrastructure.persistent.redis.IRedisService;
 import cn.hzq.types.common.Constants;
+import cn.hzq.types.enums.ResponseCode;
+import cn.hzq.types.exception.AppException;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RBlockingQueue;
 import org.redisson.api.RDelayedQueue;
@@ -51,7 +53,7 @@ public class StrategyRepository implements IStrategyRepository {
     @Override
     public List<StrategyAwardEntity> queryStrategyAwardList(Long strategyId) {
         //优先从缓存中获取
-        String cacheKey = Constants.RedisKey.STRATEGY_AWARD_KEY + strategyId;
+        String cacheKey = Constants.RedisKey.STRATEGY_AWARD_LIST_KEY + strategyId;
         List<StrategyAwardEntity> strategyAwardEntities = redisService.getValue(cacheKey);
         if (strategyAwardEntities != null && strategyAwardEntities.isEmpty()) return strategyAwardEntities;
 
@@ -65,6 +67,9 @@ public class StrategyRepository implements IStrategyRepository {
                     .awardCount(strategyAward.getAwardCount())
                     .awardCountSurplus(strategyAward.getAwardCountSurplus())
                     .awardRate(strategyAward.getAwardRate())
+                    .awardTitle(strategyAward.getAwardTitle())
+                    .awardSubtitle(strategyAward.getAwardSubtitle())
+                    .sort(strategyAward.getSort())
                     .build();
             strategyAwardEntities.add(strategyAwardEntity);
         }
@@ -89,7 +94,12 @@ public class StrategyRepository implements IStrategyRepository {
 
     @Override
     public int getRateRange(String key) {
-        return redisService.getValue(Constants.RedisKey.STRATEGY_RATE_RANGE_KEY + key);
+        String cacheKey = Constants.RedisKey.STRATEGY_RATE_RANGE_KEY + key;
+        if (!redisService.isExists(cacheKey)) {
+            throw new AppException(ResponseCode.UN_ASSEMBLED_STRATEGY_ARMORY.getCode(),
+                    cacheKey + Constants.COLON + ResponseCode.UN_ASSEMBLED_STRATEGY_ARMORY.getInfo());
+        }
+        return redisService.getValue(cacheKey);
     }
 
     @Override
@@ -145,7 +155,7 @@ public class StrategyRepository implements IStrategyRepository {
 
     @Override
     public String queryStrategyRuleValue(Long strategyId, String ruleModel) {
-        return queryStrategyRuleValue(strategyId,null,ruleModel);
+        return queryStrategyRuleValue(strategyId, null, ruleModel);
     }
 
     @Override
@@ -160,7 +170,7 @@ public class StrategyRepository implements IStrategyRepository {
     @Override
     public RuleTreeVO queryRuleTreeVOByTreeId(String treeId) {
         // 优先从缓存获取
-        String cacheKey = Constants.RedisKey.RULE_TREE_VO_KEY+treeId;
+        String cacheKey = Constants.RedisKey.RULE_TREE_VO_KEY + treeId;
         RuleTreeVO ruleTreeVOCache = redisService.getValue(cacheKey);
         if (ruleTreeVOCache != null) return ruleTreeVOCache;
 
@@ -215,22 +225,22 @@ public class StrategyRepository implements IStrategyRepository {
     @Override
     public void cacheStrategyAwardCount(String cacheKey, Integer awardCount) {
         if (null != redisService.getValue(cacheKey)) return;
-        redisService.setAtomicLong(cacheKey,awardCount);
+        redisService.setAtomicLong(cacheKey, awardCount);
     }
 
     @Override
     public Boolean subtractionAwardStock(String cacheKey) {
         // 返回的是剩余值
         long surplus = redisService.decr(cacheKey);
-        if (surplus < 0){
-            redisService.setValue(cacheKey,0);
+        if (surplus < 0) {
+            redisService.setValue(cacheKey, 0);
             return false;
         }
         // 库存锁
-        String lockKey = cacheKey+Constants.UNDERLINE+surplus;
+        String lockKey = cacheKey + Constants.UNDERLINE + surplus;
         Boolean lock = redisService.setNx(lockKey);
-        if (!lock){
-            log.info("策略奖品库存加锁失败 {}",lockKey);
+        if (!lock) {
+            log.info("策略奖品库存加锁失败 {}", lockKey);
         }
         return lock;
     }
@@ -243,7 +253,7 @@ public class StrategyRepository implements IStrategyRepository {
         // 获取延迟队列
         RDelayedQueue<StrategyAwardStockKeyVO> delayedQueue = redisService.getDelayedQueue(blockingQueue);
         // 设置内容和延迟时间
-        delayedQueue.offer(strategyAwardStockKeyVO,3, TimeUnit.SECONDS);
+        delayedQueue.offer(strategyAwardStockKeyVO, 3, TimeUnit.SECONDS);
     }
 
     @Override
@@ -259,6 +269,35 @@ public class StrategyRepository implements IStrategyRepository {
         strategyAward.setAwardId(awardId);
         strategyAward.setStrategyId(strategyId);
         strategyAwardDao.updateStrategyAwardStock(strategyAward);
+
+    }
+
+    @Override
+    public StrategyAwardEntity queryStrategyAwardEntity(Long strategyId, Integer awardId) {
+        //优先从缓存获取
+        String cacheKey = Constants.RedisKey.STRATEGY_AWARD_KEY + strategyId + Constants.UNDERLINE + awardId;
+        StrategyAwardEntity strategyAwardEntity = redisService.getValue(cacheKey);
+        if (strategyAwardEntity != null) {
+            return strategyAwardEntity;
+        }
+        //查询数据
+        StrategyAward strategyAwardReq = new StrategyAward();
+        strategyAwardReq.setAwardId(awardId);
+        strategyAwardReq.setStrategyId(strategyId);
+        StrategyAward strategyAwardRes = strategyAwardDao.queryStrategyAward(strategyAwardReq);
+
+        strategyAwardEntity = StrategyAwardEntity.builder()
+                .strategyId(strategyAwardRes.getStrategyId())
+                .awardId(strategyAwardRes.getAwardId())
+                .awardTitle(strategyAwardRes.getAwardTitle())
+                .awardSubtitle(strategyAwardRes.getAwardSubtitle())
+                .awardCount(strategyAwardRes.getAwardCount())
+                .awardCountSurplus(strategyAwardRes.getAwardCountSurplus())
+                .awardRate(strategyAwardRes.getAwardRate())
+                .sort(strategyAwardRes.getSort())
+                .build();
+        redisService.setValue(cacheKey, strategyAwardEntity);
+        return strategyAwardEntity;
 
     }
 }

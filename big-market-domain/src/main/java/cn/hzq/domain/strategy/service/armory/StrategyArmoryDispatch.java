@@ -32,7 +32,6 @@ public class StrategyArmoryDispatch implements IStrategyArmory, IStrategyDispatc
     public boolean assembleLotteryStrategy(Long strategyId) {
         // 1、查询策略配置
         List<StrategyAwardEntity> strategyAwardEntities = repository.queryStrategyAwardList(strategyId);
-        assembleLotteryStrategy(String.valueOf(strategyId), strategyAwardEntities);
 
         // 2. 缓存奖品库存【用于decr扣减库存使用】
         for (StrategyAwardEntity strategyAward : strategyAwardEntities) {
@@ -41,18 +40,20 @@ public class StrategyArmoryDispatch implements IStrategyArmory, IStrategyDispatc
             cacheStrategyAwardCount(strategyId, awardId, awardCount);
         }
         // 3.1 默认装配置【全量抽奖概率】
-        // 2.2 权重策略配置 - 适用与rule_weight 权重规则配置
+        assembleLotteryStrategy(String.valueOf(strategyId), strategyAwardEntities);
+
+        // 3.2 权重策略配置 - 适用与rule_weight 权重规则配置
         StrategyEntity strategyEntity = repository.queryStrategyEntityByStrategyId(strategyId);
         String ruleWeight = strategyEntity.getRuleWeight();
         if (ruleWeight == null) return true;
-        // TODO queryStrategyRule 方法名称限定，只查询一个对象。目前可能造成别人调用查询list返回
+
         StrategyRuleEntity strategyRuleEntity = repository.queryStrategyRule(strategyId, ruleWeight);
+        // 业务异常，策略规则中 rule_weight 权重规则已适用但未配置
         if (null == strategyRuleEntity) {
             throw new AppException(ResponseCode.STRATEGY_RULE_WEIGHT_IS_NULL.getCode(), ResponseCode.STRATEGY_RULE_WEIGHT_IS_NULL.getInfo());
         }
         Map<String, List<Integer>> ruleWeightValueMap = strategyRuleEntity.getRuleWeightValues();
-        Set<String> keys = ruleWeightValueMap.keySet();
-        for (String key : keys) {
+        for (String key : ruleWeightValueMap.keySet()) {
             List<Integer> ruleWeightValues = ruleWeightValueMap.get(key);
             ArrayList<StrategyAwardEntity> strategyAwardEntitiesClone = new ArrayList<>(strategyAwardEntities);
             strategyAwardEntitiesClone.removeIf(entity -> !ruleWeightValues.contains(entity.getAwardId()));
@@ -99,7 +100,7 @@ public class StrategyArmoryDispatch implements IStrategyArmory, IStrategyDispatc
             BigDecimal awardRate = strategyAwardEntity.getAwardRate();
 
             //计算出每个概率值需要存放到查找表的数量，循环填充
-            for (int i = 0; i < rateRange.multiply(awardRate).setScale(0, RoundingMode.CEILING).intValue(); i++) {
+            for (int i = 0; i < rateRange.multiply(awardRate).intValue(); i++) {
                 strategyAwardSearchRateTable.add(awardId);
             }
         }
