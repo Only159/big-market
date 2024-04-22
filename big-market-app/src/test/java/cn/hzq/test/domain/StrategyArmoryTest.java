@@ -30,7 +30,7 @@ public class StrategyArmoryTest {
      */
     @Test
     public void test_strategyArmory() {
-        boolean success = strategyArmory.assembleLotteryStrategy(10001L);
+        boolean success = strategyArmory.assembleLotteryStrategy(100006L);
         log.info("测试结果：{}", success);
     }
 
@@ -39,7 +39,7 @@ public class StrategyArmoryTest {
      */
     @Test
     public void test_getAssembleRandomVal() {
-        log.info("测试结果: {} - 奖品id值", strategyDispatch.getRandomAwardId(10001L));
+        log.info("测试结果: {} - 奖品id值", strategyDispatch.getRandomAwardId(100006L));
 
     }
     @Test
