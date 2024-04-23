@@ -7,7 +7,7 @@ import java.util.Date;
 /**
  * @author 黄照权
  * @Date 2024/4/22
- * @Description 抽奖活动单 持久化对象
+ * @Description 抽奖活动订单 持久化对象
  **/
 @Data
 public class RaffleActivityOrder {
