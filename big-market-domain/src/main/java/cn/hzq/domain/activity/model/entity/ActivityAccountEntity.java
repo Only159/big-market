@@ -1,22 +1,20 @@
-package cn.hzq.infrastructure.persistent.po;
+package cn.hzq.domain.activity.model.entity;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-
-import java.util.Date;
+import lombok.NoArgsConstructor;
 
 /**
  * @author 黄照权
- * @Date 2024/4/22
- * @Description 抽奖活动账户表 持久化对象
+ * @Date 2024/4/24
+ * @Description 活动账户实体对象
  **/
 @Data
-public class RaffleActivityAccount {
-
-    /**
-     * 自增ID
-     */
-    private Long id;
-
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class ActivityAccountEntity {
     /**
      * 用户ID
      */
@@ -56,15 +54,4 @@ public class RaffleActivityAccount {
      * 月次数-剩余
      */
     private Integer monthCountSurplus;
-
-    /**
-     * 创建时间
-     */
-    private Date createTime;
-
-    /**
-     * 更新时间
-     */
-    private Date updateTime;
-
 }

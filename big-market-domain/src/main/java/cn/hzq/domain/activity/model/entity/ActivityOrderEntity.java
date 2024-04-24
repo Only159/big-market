@@ -1,21 +1,23 @@
-package cn.hzq.infrastructure.persistent.po;
+package cn.hzq.domain.activity.model.entity;
 
+import cn.hzq.domain.activity.model.valobj.OrderStateVO;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
 /**
  * @author 黄照权
- * @Date 2024/4/22
- * @Description 抽奖活动订单 持久化对象
+ * @Date 2024/4/24
+ * @Description 活动参与订单实体对象
  **/
 @Data
-public class RaffleActivityOrder {
-    /**
-     * 自增ID
-     */
-    private Long id;
-
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class ActivityOrderEntity {
     /**
      * 用户ID
      */
@@ -64,16 +66,6 @@ public class RaffleActivityOrder {
     /**
      * 订单状态
      */
-    private String state;
-
-    /**
-     * 创建时间
-     */
-    private Date createTime;
-
-    /**
-     * 更新时间
-     */
-    private Date updateTime;
+    private OrderStateVO state;
 
 }

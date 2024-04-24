@@ -45,6 +45,4 @@ public class RaffleActivityCount {
      * 更新时间
      */
     private Date updateTime;
-
-
 }
