@@ -15,7 +15,6 @@ import java.util.List;
 @Mapper
 @DBRouterStrategy(splitTable = true) //作用是执行 MyBaits 操作的时候，对 SQL 语句进行动态变更
 public interface IRaffleActivityOrderDao {
-    @DBRouter(key = "userId")
     void insert(RaffleActivityOrder raffleActivityOrder);
 
     @DBRouter

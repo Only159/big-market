@@ -2,6 +2,11 @@ package cn.hzq.types.exception;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+/**
+ * @Author HZQ
+ * @Date  2024/4/25
+ * @Description 自定义异常
+*/
 
 @EqualsAndHashCode(callSuper = true)
 @Data
