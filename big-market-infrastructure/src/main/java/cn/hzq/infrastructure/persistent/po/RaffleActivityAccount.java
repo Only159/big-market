@@ -10,7 +10,7 @@ import java.util.Date;
  * @Description 抽奖活动账户表 持久化对象
  **/
 @Data
-public class RaffleActivityAccount {
+public class  RaffleActivityAccount {
 
     /**
      * 自增ID

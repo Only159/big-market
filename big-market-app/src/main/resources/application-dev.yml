@@ -12,7 +12,6 @@ app:
     api-version: v1
     #跨域，开发阶段可以设置为 * 不限制
     cross-origin: '*'
-
 # 线程池配置
 thread:
   pool:
@@ -60,7 +59,7 @@ mini-db-router:
       list: db01,db02
       db00:
         driver-class-name: com.mysql.cj.jdbc.Driver
-        url: jdbc:mysql://localhost:3306/big_market?useUnicode=true&characterEncoding=utf8&autoReconnect=true&zeroDateTimeBehavior=convertToNull&serverTimezone=UTC&useSSL=true
+        url: jdbc:mysql://117.72.39.191:13306/big_market?useUnicode=true&characterEncoding=utf8&autoReconnect=true&zeroDateTimeBehavior=convertToNull&serverTimezone=UTC&useSSL=true
         username: root
         password: 159357
         type-class-name: com.zaxxer.hikari.HikariDataSource
@@ -76,7 +75,7 @@ mini-db-router:
           connection-test-query: SELECT 1
       db01:
         driver-class-name: com.mysql.cj.jdbc.Driver
-        url: jdbc:mysql://localhost:3306/big_market_01?useUnicode=true&characterEncoding=utf8&autoReconnect=true&zeroDateTimeBehavior=convertToNull&serverTimezone=UTC&useSSL=true
+        url: jdbc:mysql://117.72.39.191:13306/big_market_01?useUnicode=true&characterEncoding=utf8&autoReconnect=true&zeroDateTimeBehavior=convertToNull&serverTimezone=UTC&useSSL=true
         username: root
         password: 159357
         type-class-name: com.zaxxer.hikari.HikariDataSource
@@ -91,7 +90,7 @@ mini-db-router:
           connection-test-query: SELECT 1
       db02:
         driver-class-name: com.mysql.cj.jdbc.Driver
-        url: jdbc:mysql://localhost:3306/big_market_02?useUnicode=true&characterEncoding=utf8&autoReconnect=true&zeroDateTimeBehavior=convertToNull&serverTimezone=UTC&useSSL=true
+        url: jdbc:mysql://117.72.39.191:13306/big_market_02?useUnicode=true&characterEncoding=utf8&autoReconnect=true&zeroDateTimeBehavior=convertToNull&serverTimezone=UTC&useSSL=true
         username: root
         password: 159357
         type-class-name: com.zaxxer.hikari.HikariDataSource
@@ -111,8 +110,8 @@ mybatis:
 redis:
   sdk:
     config:
-      host: localhost
-      port: 6379
+      host: 117.72.39.191
+      port: 16379
       pool-size: 10
       min-idle-size: 5
       idle-timeout: 30000
@@ -126,3 +125,14 @@ logging:
   level:
     root: info
   config: classpath:logback-spring.xml
+#Spring 配置rabbitmq
+spring:
+  rabbitmq:
+    addresses: 117.72.39.191
+    username: admin
+    password: admin
+    listener:
+      simple:
+        prefetch: 1 #每次投递n个消息，消息完再投递n个
+    topic:
+      activity_sku_stock_zero: activity_sku_stock_zero
