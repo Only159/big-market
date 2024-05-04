@@ -2,6 +2,8 @@ package cn.hzq.infrastructure.persistent.redis;
 
 import org.redisson.api.*;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * @author 黄照权
  * @Date 2024/3/10
@@ -263,8 +265,22 @@ public interface IRedisService {
      */
     <T> RBloomFilter<T> getBloomFilter(String key);
 
+    /**
+     * 加锁
+     * @param key 键
+     * @return 加锁结果
+     */
+
     Boolean setNx(String key);
 
 
+    /**
+     * 加锁 设置过期时间
+     * @param key 键
+     * @param expired 过期时间
+     * @param timeUnit 时间单位
+     * @return 加锁结果
+     */
+    Boolean setNx(String key, long expired, TimeUnit timeUnit);
 }
 

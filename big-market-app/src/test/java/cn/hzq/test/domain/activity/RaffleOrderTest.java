@@ -4,14 +4,19 @@ import cn.hzq.domain.activity.model.entity.ActivityOrderEntity;
 import cn.hzq.domain.activity.model.entity.ActivityShopCartEntity;
 import cn.hzq.domain.activity.model.entity.SkuRechargeEntity;
 import cn.hzq.domain.activity.service.IRaffleOrder;
+import cn.hzq.domain.activity.service.armory.IActivityArmory;
+import cn.hzq.types.exception.AppException;
 import com.alibaba.fastjson2.JSON;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.annotation.Resource;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * @author 黄照权
@@ -24,6 +29,13 @@ import javax.annotation.Resource;
 public class RaffleOrderTest {
     @Resource
     private IRaffleOrder raffleOrder;
+    @Resource
+    private IActivityArmory activityArmory;
+
+    @Before
+    public void setUp(){
+        log.info("装配活动：{}",activityArmory.assembleActivitySku(9011L));
+    }
     @Test
     public void test_createRaffleActivityOrder(){
         SkuRechargeEntity skuRechargeEntity = new SkuRechargeEntity();
@@ -33,5 +45,26 @@ public class RaffleOrderTest {
         skuRechargeEntity.setOutBusinessNo("700091009111");
         String orderId = raffleOrder.createSkuRechargeOrder(skuRechargeEntity);
         log.info("测试结果：订单编号：{}", orderId);
+    }
+
+    /**
+     * 测试库存消耗和最终一致性更新
+     * @throws InterruptedException
+     */
+    @Test
+    public void test_createSkuRechargerOrder() throws InterruptedException {
+        for (int i = 0; i < 20; i++) {
+            try {
+                SkuRechargeEntity skuRechargeEntity = new SkuRechargeEntity();
+                skuRechargeEntity.setUserId("hzq");
+                skuRechargeEntity.setSku(9011L);
+                skuRechargeEntity.setOutBusinessNo(RandomStringUtils.randomNumeric(12));
+                String orderId = raffleOrder.createSkuRechargeOrder(skuRechargeEntity);
+                log.info("测试结果：订单编号：{}",orderId);
+            }catch (AppException e){
+                log.warn(e.getInfo());
+            }
+        }
+        new CountDownLatch(1).await();
     }
 }

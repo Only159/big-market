@@ -2,6 +2,7 @@ package cn.hzq.domain.activity.service;
 
 import cn.hzq.domain.activity.model.aggregate.CreateOrderAggregate;
 import cn.hzq.domain.activity.model.entity.*;
+import cn.hzq.domain.activity.model.valobj.ActivitySkuStockVO;
 import cn.hzq.domain.activity.model.valobj.OrderStateVO;
 import cn.hzq.domain.activity.repository.IActivityRepository;
 import cn.hzq.domain.activity.service.rule.factory.DefaultActivityChainFactory;
@@ -16,7 +17,7 @@ import java.util.Date;
  * @Description 抽奖活动服务
  **/
 @Service
-public class RaffleActivityService extends AbstractRaffleActivity {
+public class RaffleActivityService extends AbstractRaffleActivity implements ISkuStock{
 
     public RaffleActivityService(DefaultActivityChainFactory defaultActivityChainFactory, IActivityRepository activityRepository) {
         super(defaultActivityChainFactory, activityRepository);
@@ -54,5 +55,26 @@ public class RaffleActivityService extends AbstractRaffleActivity {
                 .monthCount(activityCountEntity.getMonthCount())
                 .activityOrderEntity(activityOrderEntity)
                 .build();
+    }
+
+    @Override
+    public ActivitySkuStockVO takeQueueValue() throws InterruptedException {
+        return activityRepository.takeQueueValue();
+
+    }
+
+    @Override
+    public void clearQueueValue() {
+        activityRepository.clearQueueValue();
+    }
+
+    @Override
+    public void updateActivitySkuStock(Long sku) {
+        activityRepository.updateActivitySkuStock(sku);
+    }
+
+    @Override
+    public void clearActivitySkuStock(Long sku) {
+        activityRepository.clearActivitySkuStock(sku);
     }
 }

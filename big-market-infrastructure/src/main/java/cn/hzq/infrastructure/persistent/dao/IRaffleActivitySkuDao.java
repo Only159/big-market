@@ -10,5 +10,22 @@ import org.apache.ibatis.annotations.Mapper;
  **/
 @Mapper
 public interface IRaffleActivitySkuDao {
+    /**
+     * 通过sku查询详细信息
+     * @param sku 活动sku
+     * @return 实体对象
+     */
     RaffleActivitySku queryRaffleActivitySkuBySku(Long sku);
+
+    /**
+     * 更新sku库存信息
+     * @param sku 活动sku
+     */
+    void updateActivitySkuStock(Long sku);
+
+    /**
+     * 清空活动库存
+     * @param sku 活动sku
+     */
+    void clearActivitySkuStock(Long sku);
 }

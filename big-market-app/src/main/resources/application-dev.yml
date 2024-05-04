@@ -129,6 +129,7 @@ logging:
 spring:
   rabbitmq:
     addresses: 117.72.39.191
+    port: 15672
     username: admin
     password: admin
     listener:
