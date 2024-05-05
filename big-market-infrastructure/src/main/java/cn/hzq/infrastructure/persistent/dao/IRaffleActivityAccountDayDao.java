@@ -1,5 +1,8 @@
 package cn.hzq.infrastructure.persistent.dao;
 
+import cn.bugstack.middleware.db.router.annotation.DBRouter;
+import cn.bugstack.middleware.db.router.annotation.DBRouterStrategy;
+import cn.hzq.infrastructure.persistent.po.RaffleActivityAccountDay;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
@@ -9,4 +12,10 @@ import org.apache.ibatis.annotations.Mapper;
  **/
 @Mapper
 public interface IRaffleActivityAccountDayDao {
+    int updateActivityAccountDaySubtractionQuota(RaffleActivityAccountDay raffleActivityAccountDay);
+
+    void insertActivityAccountDay(RaffleActivityAccountDay raffleActivityAccountDay);
+
+    @DBRouter
+    RaffleActivityAccountDay queryActivityAccountDayByUserId(RaffleActivityAccountDay raffleActivityAccountDayReq);
 }

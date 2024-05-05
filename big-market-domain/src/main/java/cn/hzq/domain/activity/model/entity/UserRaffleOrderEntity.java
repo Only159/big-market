@@ -1,5 +1,6 @@
-package cn.hzq.infrastructure.persistent.po;
+package cn.hzq.domain.activity.model.entity;
 
+import cn.hzq.domain.activity.model.valobj.UserRaffleOrderStateVO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,15 +11,13 @@ import java.util.Date;
 /**
  * @author 黄照权
  * @Date 2024/5/5
- * @Description 用户抽奖订单表
+ * @Description 用户抽奖订单实体对象
  **/
 @Data
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
-public class UserRaffleOrder {
-
-    private String id;
+@AllArgsConstructor
+public class UserRaffleOrderEntity {
     /**
      * 用户ID
      */
@@ -46,14 +45,5 @@ public class UserRaffleOrder {
     /**
      * 订单状态；create-创建、used-已使用、cancel-已作废
      */
-    private String orderState;
-    /**
-     * 创建时间
-     */
-    private Date createTime;
-    /**
-     * 更新时间
-     */
-    private Date updateTime;
-
+    private UserRaffleOrderStateVO orderState;
 }

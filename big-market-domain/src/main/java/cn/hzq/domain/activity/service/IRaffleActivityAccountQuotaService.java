@@ -1,15 +1,13 @@
 package cn.hzq.domain.activity.service;
 
-import cn.hzq.domain.activity.model.entity.ActivityOrderEntity;
-import cn.hzq.domain.activity.model.entity.ActivityShopCartEntity;
 import cn.hzq.domain.activity.model.entity.SkuRechargeEntity;
 
 /**
  * @author 黄照权
  * @Date 2024/4/24
- * @Description 活动订单接口
+ * @Description 抽奖活动账户额度服务
  **/
-public interface IRaffleOrder {
+public interface IRaffleActivityAccountQuotaService {
     /**
      * 创建 sku 账户充值订单，给用户增加抽奖次数
      * <p>
@@ -17,7 +15,7 @@ public interface IRaffleOrder {
      * 2. 对于用户可获得的抽奖次数，比如首次进来就有一次，则是依赖于运营配置的动作，在前端页面上。用户点击后，可以获得一次抽奖次数。
      *
      * @param skuRechargeEntity 活动商品充值实体对象
-     * @return 活动ID
+     * @return 活动ID createOrder
      */
-    String createSkuRechargeOrder(SkuRechargeEntity skuRechargeEntity);
+    String createOrder(SkuRechargeEntity skuRechargeEntity);
 }

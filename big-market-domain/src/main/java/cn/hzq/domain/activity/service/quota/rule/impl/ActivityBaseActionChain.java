@@ -1,13 +1,12 @@
-package cn.hzq.domain.activity.service.rule.impl;
+package cn.hzq.domain.activity.service.quota.rule.impl;
 
 import cn.hzq.domain.activity.model.entity.ActivityCountEntity;
 import cn.hzq.domain.activity.model.entity.ActivityEntity;
 import cn.hzq.domain.activity.model.entity.ActivitySkuEntity;
 import cn.hzq.domain.activity.model.valobj.ActivityStateVO;
-import cn.hzq.domain.activity.service.rule.AbstractActionChain;
+import cn.hzq.domain.activity.service.quota.rule.AbstractActionChain;
 import cn.hzq.types.enums.ResponseCode;
 import cn.hzq.types.exception.AppException;
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 

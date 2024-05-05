@@ -5,9 +5,9 @@ import cn.hzq.domain.activity.model.valobj.ActivitySkuStockVO;
 /**
  * @author 黄照权
  * @Date 2024/5/4
- * @Description 活动Sku 库存处理接口
+ * @Description 抽奖活动SKU库存服务接口
  **/
-public interface ISkuStock {
+public interface IRaffleActivitySkuStockService {
     /**
      * 获取活动sku 库存消耗队列
      *

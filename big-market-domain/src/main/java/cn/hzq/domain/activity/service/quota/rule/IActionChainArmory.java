@@ -1,4 +1,4 @@
-package cn.hzq.domain.activity.service.rule;
+package cn.hzq.domain.activity.service.quota.rule;
 
 /**
  * @author 黄照权

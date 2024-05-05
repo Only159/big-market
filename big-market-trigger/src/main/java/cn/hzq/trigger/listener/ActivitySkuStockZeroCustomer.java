@@ -1,6 +1,6 @@
 package cn.hzq.trigger.listener;
 
-import cn.hzq.domain.activity.service.ISkuStock;
+import cn.hzq.domain.activity.service.IRaffleActivitySkuStockService;
 import cn.hzq.types.event.BaseEvent;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.TypeReference;
@@ -23,7 +23,7 @@ public class ActivitySkuStockZeroCustomer {
     @Value("${spring.rabbitmq.topic.activity_sku_stock_zero}")
     private String topic;
     @Resource
-    private ISkuStock skuStock;
+    private IRaffleActivitySkuStockService skuStock;
 
     @RabbitListener(queuesToDeclare = @Queue("activity_sku_stock_zero"))
     public void listener(String message) {

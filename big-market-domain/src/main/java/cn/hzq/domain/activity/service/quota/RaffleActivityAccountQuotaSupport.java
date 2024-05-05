@@ -1,21 +1,21 @@
-package cn.hzq.domain.activity.service;
+package cn.hzq.domain.activity.service.quota;
 
 import cn.hzq.domain.activity.model.entity.ActivityCountEntity;
 import cn.hzq.domain.activity.model.entity.ActivityEntity;
 import cn.hzq.domain.activity.model.entity.ActivitySkuEntity;
 import cn.hzq.domain.activity.repository.IActivityRepository;
-import cn.hzq.domain.activity.service.rule.factory.DefaultActivityChainFactory;
+import cn.hzq.domain.activity.service.quota.rule.factory.DefaultActivityChainFactory;
 
 /**
  * @author 黄照权
  * @Date 2024/4/25
- * @Description
+ * @Description 抽奖活动支撑类
  **/
-public class RaffleActivitySupport {
+public class RaffleActivityAccountQuotaSupport {
     protected DefaultActivityChainFactory defaultActivityChainFactory;
     protected IActivityRepository activityRepository;
 
-    public RaffleActivitySupport(DefaultActivityChainFactory defaultActivityChainFactory, IActivityRepository activityRepository) {
+    public RaffleActivityAccountQuotaSupport(DefaultActivityChainFactory defaultActivityChainFactory, IActivityRepository activityRepository) {
         this.defaultActivityChainFactory = defaultActivityChainFactory;
         this.activityRepository = activityRepository;
     }
