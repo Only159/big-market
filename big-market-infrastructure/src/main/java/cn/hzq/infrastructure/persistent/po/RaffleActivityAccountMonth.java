@@ -6,62 +6,39 @@ import java.util.Date;
 
 /**
  * @author 黄照权
- * @Date 2024/4/22
- * @Description 抽奖活动账户表-总次数
+ * @Date 2024/5/5
+ * @Description 抽奖活动账户表-月次数
  **/
 @Data
-public class  RaffleActivityAccount {
-
+public class RaffleActivityAccountMonth {
     /**
      * 自增ID
      */
-    private Long id;
-
+    private String id;
     /**
      * 用户ID
      */
     private String userId;
-
     /**
      * 活动ID
      */
     private Long activityId;
-
     /**
-     * 总次数
+     * 月（yyyy-mm）
      */
-    private Integer totalCount;
-
-    /**
-     * 总次数-剩余
-     */
-    private Integer totalCountSurplus;
-
-    /**
-     * 日次数
-     */
-    private Integer dayCount;
-
-    /**
-     * 日次数-剩余
-     */
-    private Integer dayCountSurplus;
-
+    private String month;
     /**
      * 月次数
      */
     private Integer monthCount;
-
     /**
      * 月次数-剩余
      */
     private Integer monthCountSurplus;
-
     /**
      * 创建时间
      */
     private Date createTime;
-
     /**
      * 更新时间
      */

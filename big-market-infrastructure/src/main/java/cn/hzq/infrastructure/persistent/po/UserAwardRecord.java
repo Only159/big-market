@@ -6,62 +6,51 @@ import java.util.Date;
 
 /**
  * @author 黄照权
- * @Date 2024/4/22
- * @Description 抽奖活动账户表-总次数
+ * @Date 2024/5/5
+ * @Description 用户中奖记录表
  **/
 @Data
-public class  RaffleActivityAccount {
-
+public class UserAwardRecord {
     /**
      * 自增ID
      */
-    private Long id;
-
+    private String id;
     /**
      * 用户ID
      */
     private String userId;
-
     /**
      * 活动ID
      */
     private Long activityId;
-
     /**
-     * 总次数
+     * 抽奖策略ID
      */
-    private Integer totalCount;
-
+    private Long strategyId;
     /**
-     * 总次数-剩余
+     * 抽奖订单ID【作为幂等使用】
      */
-    private Integer totalCountSurplus;
-
+    private String orderId;
     /**
-     * 日次数
+     * 奖品ID
      */
-    private Integer dayCount;
-
+    private Integer awardId;
     /**
-     * 日次数-剩余
+     * 奖品标题（名称）
      */
-    private Integer dayCountSurplus;
-
+    private String awardTitle;
     /**
-     * 月次数
+     * 中奖时间
      */
-    private Integer monthCount;
-
+    private Date awardTime;
     /**
-     * 月次数-剩余
+     * 奖品状态；create-创建、completed-发奖完成
      */
-    private Integer monthCountSurplus;
-
+    private String awardState;
     /**
      * 创建时间
      */
     private Date createTime;
-
     /**
      * 更新时间
      */
