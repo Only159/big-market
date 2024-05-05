@@ -14,7 +14,7 @@ import java.util.Date;
  * @Description 基础消息模板
  **/
 public abstract class BaseEvent<T> {
-    public abstract EventMessage<T> buildEventMessage(T date);
+    public abstract EventMessage<T> buildEventMessage(T data);
 
     public abstract String topic();
 
