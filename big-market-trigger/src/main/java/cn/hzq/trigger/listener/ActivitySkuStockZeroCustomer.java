@@ -35,7 +35,8 @@ public class ActivitySkuStockZeroCustomer {
             Long sku = eventMessage.getData();
             // 更新库存
             skuStock.clearActivitySkuStock(sku);
-            // 清空队列 【库存为0，已经不需要延迟队列记录数据了】
+            // 清空队列 【库存为0，已经不需要延迟队列记录数据了】 【清空所有队列】
+            //TODO 指定处理
             skuStock.clearQueueValue();
         } catch (Exception e) {
             log.error("监听活动sku库存消耗为0消息，消费失败 topic:{}，message:{}", topic, message);

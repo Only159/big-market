@@ -20,10 +20,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -74,6 +71,7 @@ public class StrategyRepository implements IStrategyRepository {
                     .awardTitle(strategyAward.getAwardTitle())
                     .awardSubtitle(strategyAward.getAwardSubtitle())
                     .sort(strategyAward.getSort())
+                    .ruleModels(strategyAward.getRuleModels())
                     .build();
             strategyAwardEntities.add(strategyAwardEntity);
         }
@@ -233,20 +231,33 @@ public class StrategyRepository implements IStrategyRepository {
     }
 
     @Override
-    public Boolean subtractionAwardStock(String cacheKey) {
+    public Boolean subtractionAwardStock(String cacheKey, Date endDateTime) {
         // 返回的是剩余值
         long surplus = redisService.decr(cacheKey);
         if (surplus < 0) {
+            // 库存小于0 恢复为0
             redisService.setValue(cacheKey, 0);
             return false;
         }
-        // 库存锁
+        // 按照cacheKey和decr后的值 组成库存锁
+        // 加锁是为了兜底 不会超卖
         String lockKey = cacheKey + Constants.UNDERLINE + surplus;
-        Boolean lock = redisService.setNx(lockKey);
+        Boolean lock = false;
+        if (null != endDateTime) {
+            long expireMillis = endDateTime.getTime() - System.currentTimeMillis() + TimeUnit.DAYS.toMillis(1);
+            lock = redisService.setNx(lockKey, expireMillis, TimeUnit.MILLISECONDS);
+        } else {
+            lock = redisService.setNx(lockKey);
+        }
         if (!lock) {
             log.info("策略奖品库存加锁失败 {}", lockKey);
         }
         return lock;
+    }
+
+    @Override
+    public Boolean subtractionAwardStock(String cacheKey) {
+        return subtractionAwardStock(cacheKey, null);
     }
 
     @Override
@@ -323,5 +334,21 @@ public class StrategyRepository implements IStrategyRepository {
         if (raffleActivityAccountDay == null) return 0;
         //总次数-剩余的 等于今天参与的
         return raffleActivityAccountDay.getDayCount() - raffleActivityAccountDay.getDayCountSurplus();
+    }
+
+    @Override
+    public Map<String, Integer> queryAwardRuleLockCount(String[] treeIds) {
+        // 非空判断
+        if (treeIds == null || treeIds.length == 0) {
+            return new HashMap<>();
+        }
+        List<RuleTreeNode> ruleTreeNodes = ruleTreeNodeDao.queryRuleLocks(treeIds);
+        HashMap<String, Integer> resultMap = new HashMap<>();
+        for (RuleTreeNode ruleTreeNode : ruleTreeNodes) {
+            String treeId = ruleTreeNode.getTreeId();
+            Integer ruleValue = Integer.valueOf(ruleTreeNode.getRuleValue());
+            resultMap.put(treeId, ruleValue);
+        }
+        return resultMap;
     }
 }

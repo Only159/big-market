@@ -29,7 +29,7 @@ public class LogicTreeTest {
 
     /**
      * rule_lock --左--> rule_luck_award
-     *           --右--> rule_stock --右--> rule_luck_award
+     * --右--> rule_stock --右--> rule_luck_award
      */
 
     @Test
@@ -86,14 +86,14 @@ public class LogicTreeTest {
         ruleTreeVO.setTreeDesc("决策树规则,增加all-e-3画图模型");
         ruleTreeVO.setTreeRootRuleNode("rule_lock");
 
-        ruleTreeVO.setTreeNodeMap(new HashMap<String,RuleTreeNodeVO>(){{
-            put("rule_lock",rule_lock);
-            put("rule_stock",rule_stock);
-            put("rule_luck_award",rule_luck_award);
+        ruleTreeVO.setTreeNodeMap(new HashMap<String, RuleTreeNodeVO>() {{
+            put("rule_lock", rule_lock);
+            put("rule_stock", rule_stock);
+            put("rule_luck_award", rule_luck_award);
         }});
 
         IDecisionTreeEngine treeEngine = defaultTreeFactory.openLogicTree(ruleTreeVO);
-        DefaultTreeFactory.StrategyAwardVO data = treeEngine.process("hzq", 10001L, 1000);
+        DefaultTreeFactory.StrategyAwardVO data = treeEngine.process("hzq", 10001L, 1000, null);
         log.info("测试结果：{}", JSON.toJSONString(data));
     }
 }

@@ -26,13 +26,7 @@ import java.util.concurrent.CountDownLatch;
 public class RaffleActivityAccountQuotaServiceTest {
     @Resource
     private IRaffleActivityAccountQuotaService raffleOrder;
-    @Resource
-    private IActivityArmory activityArmory;
 
-    @Before
-    public void setUp(){
-        log.info("装配活动：{}",activityArmory.assembleActivitySku(9011L));
-    }
     @Test
     public void test_createRaffleActivityOrder(){
         SkuRechargeEntity skuRechargeEntity = new SkuRechargeEntity();

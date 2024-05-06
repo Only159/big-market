@@ -31,9 +31,11 @@
                award_count,
                award_count_surplus,
                award_rate,
+               rule_models,
                sort
         from strategy_award
         where strategy_id = #{strategyId}
+        order by sort asc
     </select>
 
     <select id="queryStrategyAwardRuleModels" parameterType="cn.hzq.infrastructure.persistent.po.StrategyAward" resultType="java.lang.String">

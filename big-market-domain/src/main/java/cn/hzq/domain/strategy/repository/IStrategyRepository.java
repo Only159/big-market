@@ -8,8 +8,10 @@ import cn.hzq.domain.strategy.model.valobj.RuleTreeVO;
 import cn.hzq.domain.strategy.model.valobj.StrategyAwardRuleModelVO;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author 黄照权
@@ -53,6 +55,14 @@ public interface IStrategyRepository {
      */
     void cacheStrategyAwardCount(String cacheKey, Integer awardCount);
 
+    /**
+     * 缓存key，decr方式扣减库存
+     *
+     * @param cacheKey key
+     * @param endDateTime 活动结束时间
+     * @return 扣减结果
+     */
+    Boolean subtractionAwardStock(String cacheKey, Date endDateTime);
     /**
      * 缓存key，decr方式扣减库存
      *
@@ -103,4 +113,11 @@ public interface IStrategyRepository {
      * @return 用户可用抽奖次数
      */
     Integer queryTodayUserRaffleCount(String userId, Long strategyId);
+
+    /**
+     * 通过规则Id列表查询对应配置
+     * @param treeIds 规则Id列表
+     * @return 配置值
+     */
+    Map<String, Integer> queryAwardRuleLockCount(String[] treeIds);
 }

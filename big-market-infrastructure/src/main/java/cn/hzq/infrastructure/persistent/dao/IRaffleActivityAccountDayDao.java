@@ -1,7 +1,6 @@
 package cn.hzq.infrastructure.persistent.dao;
 
 import cn.bugstack.middleware.db.router.annotation.DBRouter;
-import cn.bugstack.middleware.db.router.annotation.DBRouterStrategy;
 import cn.hzq.infrastructure.persistent.po.RaffleActivityAccountDay;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -18,4 +17,7 @@ public interface IRaffleActivityAccountDayDao {
 
     @DBRouter
     RaffleActivityAccountDay queryActivityAccountDayByUserId(RaffleActivityAccountDay raffleActivityAccountDayReq);
+
+    @DBRouter
+    Integer queryRaffleActivityAccountDayPartakeCount(RaffleActivityAccountDay raffleActivityAccountDay);
 }

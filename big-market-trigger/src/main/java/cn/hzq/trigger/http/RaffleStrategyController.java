@@ -1,9 +1,11 @@
 package cn.hzq.trigger.http;
 
+import cn.hzq.domain.activity.service.IRaffleActivityAccountQuotaService;
 import cn.hzq.domain.strategy.model.entity.RaffleAwardEntity;
 import cn.hzq.domain.strategy.model.entity.RaffleFactorEntity;
 import cn.hzq.domain.strategy.model.entity.StrategyAwardEntity;
 import cn.hzq.domain.strategy.service.IRaffleAward;
+import cn.hzq.domain.strategy.service.IRaffleRule;
 import cn.hzq.domain.strategy.service.IRaffleStrategy;
 import cn.hzq.domain.strategy.service.armory.IStrategyArmory;
 import cn.hzq.trigger.api.IRaffleStrategyService;
@@ -15,11 +17,13 @@ import cn.hzq.types.enums.ResponseCode;
 import cn.hzq.types.model.Response;
 import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author 黄照权
@@ -37,6 +41,10 @@ public class RaffleStrategyController implements IRaffleStrategyService {
     private IRaffleAward raffleAward;
     @Resource
     private IRaffleStrategy raffleStrategy;
+    @Resource
+    private IRaffleRule raffleRule;
+    @Resource
+    private IRaffleActivityAccountQuotaService raffleActivityAccountQuotaService;
 
     /**
      * 策略装配，将策略信息装配到缓存中
@@ -68,23 +76,48 @@ public class RaffleStrategyController implements IRaffleStrategyService {
     /**
      * 查询奖品列表
      *
-     * @param requestDTO{"strategyId":100001} 抽奖奖品列表查询请求参数
-     *                                        请求参数 raw json
+     * @param request 抽奖奖品列表查询请求参数实体
      * @return 奖品列表
      */
     @PostMapping("query_raffle_award_list")
     @Override
-    public Response<List<RaffleAwardListResponseDTO>> queryRaffleAwardList(@RequestBody RaffleAwardListRequestDTO requestDTO) {
+    public Response<List<RaffleAwardListResponseDTO>> queryRaffleAwardList(@RequestBody RaffleAwardListRequestDTO request) {
         try {
-            log.info("查询抽奖奖品列表开始 strategyId:{}", requestDTO.getStrategyId());
-            List<StrategyAwardEntity> strategyAwardEntities = raffleAward.queryRaffleStrategyAwardList(requestDTO.getStrategyId());
+            log.info("查询抽奖奖品列表开始 userId:{} activityId:{}", request.getUserId(), request.getActivityId());
+            // 1、参数校验
+            if (StringUtils.isBlank(request.getUserId()) || null == request.getActivityId()) {
+                return Response.<List<RaffleAwardListResponseDTO>>builder()
+                        .code(ResponseCode.ILLEGAL_PARAMETER.getCode())
+                        .info(ResponseCode.ILLEGAL_PARAMETER.getInfo())
+                        .build();
+            }
+            // 2、查询奖品配置
+            List<StrategyAwardEntity> strategyAwardEntities = raffleAward.queryRaffleStrategyAwardListByActivityId(request.getActivityId());
+
+            // 3、获取规则配置
+            String[] treeIds = strategyAwardEntities.stream()
+                    .map(StrategyAwardEntity::getRuleModels)
+                    .filter(ruleModel -> ruleModel != null && !ruleModel.isEmpty())
+                    .toArray(String[]::new);
+
+            // 4、查询规则配置-获取奖品的解锁规则【抽奖N次后解锁】
+            Map<String, Integer> ruleLockCountMap = raffleRule.queryAwardRuleLockCount(treeIds);
+
+            // 5、查询抽奖次数-用于已经参与抽奖的次数
+            Integer dayPartakeCount = raffleActivityAccountQuotaService.queryRaffleActivityAccountDayPartakeCount(request.getActivityId(), request.getUserId());
+
+            // 6、遍历填充数据
             ArrayList<RaffleAwardListResponseDTO> raffleAwardListResponseDTOS = new ArrayList<>();
             for (StrategyAwardEntity strategyAwardEntity : strategyAwardEntities) {
+                Integer awardRuleLockCount = ruleLockCountMap.get(strategyAwardEntity.getRuleModels());
                 raffleAwardListResponseDTOS.add(RaffleAwardListResponseDTO.builder()
                         .awardId(strategyAwardEntity.getAwardId())
                         .awardTitle(strategyAwardEntity.getAwardTitle())
                         .awardSubtitle(strategyAwardEntity.getAwardSubtitle())
                         .sort(strategyAwardEntity.getSort())
+                        .awardRuleLockCount(awardRuleLockCount)
+                        .isAwardUnlock(null == awardRuleLockCount || dayPartakeCount > awardRuleLockCount)
+                        .waitUnlockCount(null == awardRuleLockCount || awardRuleLockCount <= dayPartakeCount ? 0 : awardRuleLockCount - dayPartakeCount)
                         .build());
             }
             Response<List<RaffleAwardListResponseDTO>> response = Response.<List<RaffleAwardListResponseDTO>>builder()
@@ -92,12 +125,12 @@ public class RaffleStrategyController implements IRaffleStrategyService {
                     .info(ResponseCode.SUCCESS.getInfo())
                     .data(raffleAwardListResponseDTOS)
                     .build();
-            log.info("查询抽奖奖品列表完成 strategyId:{} response:{}", requestDTO.getStrategyId(), response);
+            log.info("查询抽奖奖品列表完成 userId:{} activityId:{} response:{}", request.getUserId(), request.getActivityId(), JSON.toJSONString(response));
             //返回结果
             return response;
 
         } catch (Exception e) {
-            log.error("查询抽奖奖品列表失败 strategyId:{}", requestDTO.getStrategyId(), e);
+            log.error("查询抽奖奖品列表失败 userId:{} activityId:{}", request.getUserId(), request.getActivityId(), e);
             return Response.<List<RaffleAwardListResponseDTO>>builder()
                     .code(ResponseCode.UN_ERROR.getCode())
                     .info(ResponseCode.UN_ERROR.getInfo()).build();

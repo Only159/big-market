@@ -66,7 +66,7 @@ public class RaffleActivityController implements IRaffleActivityService {
             log.info("活动装配，数据预热【完成】 activityId:{}", activityId);
             return response;
         } catch (Exception e) {
-            log.error("活动装配，数据预热【失败】 activityId:{}", activityId,e);
+            log.error("活动装配，数据预热【失败】 activityId:{}", activityId, e);
             return Response.<Boolean>builder()
                     .code(ResponseCode.UN_ERROR.getCode())
                     .info(ResponseCode.UN_ERROR.getInfo())
@@ -93,6 +93,7 @@ public class RaffleActivityController implements IRaffleActivityService {
             RaffleAwardEntity raffleAwardEntity = raffleStrategy.performRaffle(RaffleFactorEntity.builder()
                     .userId(orderEntity.getUserId())
                     .strategyId(orderEntity.getStrategyId())
+                    .endDateTime(orderEntity.getEndDateTime())
                     .build());
             // 4、存放结果-写入中奖记录
             UserAwardRecordEntity userAwardRecord =
@@ -125,7 +126,7 @@ public class RaffleActivityController implements IRaffleActivityService {
                     .info(e.getInfo())
                     .build();
 
-        } catch (Exception e){
+        } catch (Exception e) {
             log.error("抽奖活动失败。 userId:{} activityId:{}", requestDTO.getUserId(), requestDTO.getActivityId(), e);
             return Response.<ActivityDrawResponseDTO>builder()
                     .code(ResponseCode.UN_ERROR.getCode())

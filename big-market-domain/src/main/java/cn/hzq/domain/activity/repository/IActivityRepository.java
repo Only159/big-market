@@ -99,6 +99,7 @@ public interface IActivityRepository {
 
     /**
      * 通过参与抽奖活动实体对象 查找未使用订单
+     *
      * @param partakeRaffleActivityEntity 参与抽奖活动实体对象
      * @return 抽奖订单实体对象
      */
@@ -106,31 +107,35 @@ public interface IActivityRepository {
 
     /**
      * 保存参与活动订单实体对象
+     *
      * @param createPartakeOrderAggregate 参与活动订单聚合对象
      */
     void saveCreatePartakeOrderAggregate(CreatePartakeOrderAggregate createPartakeOrderAggregate);
 
     /**
      * 通过用户Id查找活动账户日额度实体对象
-     * @param userId 用户Id
+     *
+     * @param userId     用户Id
      * @param activityId 活动Id
-     * @param day 时间（天）
+     * @param day        时间（天）
      * @return 活动账户（日） 实体对象
      */
     ActivityAccountDayEntity queryActivityAccountDayByUserId(String userId, Long activityId, String day);
 
     /**
      * 通过用户Id查找活动账户月额度实体对象
-     * @param userId 用户Id
+     *
+     * @param userId     用户Id
      * @param activityId 活动Id
-     * @param month 时间（月）
+     * @param month      时间（月）
      * @return 活动账户（月）额度实体对象
      */
     ActivityAccountMonthEntity queryActivityAccountMonthByUserId(String userId, Long activityId, String month);
 
     /**
      * 通过用户Id查找活动账户总额度实体对象
-     * @param userId 用户Id
+     *
+     * @param userId     用户Id
      * @param activityId 活动Id
      * @return 活动账户（总）额度实体对象
      */
@@ -138,8 +143,18 @@ public interface IActivityRepository {
 
     /**
      * 通过活动ID查询所有SKU信息
+     *
      * @param activityId 活动ID
      * @return SKU 列表
      */
     List<ActivitySkuEntity> queryActivitySkuListByActivityId(Long activityId);
+
+    /**
+     * 查询用户当天已经参加的抽奖次数
+     *
+     * @param activityId 活动Id
+     * @param userId     用户Id
+     * @return 用于已经参加的抽奖次数
+     */
+    Integer queryRaffleActivityAccountDayPartakeCount(Long activityId, String userId);
 }

@@ -28,6 +28,18 @@ public class RaffleAwardListResponseDTO {
      */
     private String awardSubtitle;
     /**
+     * 奖品次数规则-抽奖N次后解锁  未配置则为空
+     */
+    private Integer awardRuleLockCount;
+    /**
+     * 奖品是否解锁 ture解锁  false未解锁
+     */
+    private Boolean isAwardUnlock;
+    /**
+     * 等待解锁次数 抽奖N次解锁-用户已经抽奖次数
+     */
+    private Integer waitUnlockCount;
+    /**
      * 排序
      */
     private Integer sort;
