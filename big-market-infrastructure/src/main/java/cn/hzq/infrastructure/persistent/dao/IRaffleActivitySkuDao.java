@@ -3,6 +3,8 @@ package cn.hzq.infrastructure.persistent.dao;
 import cn.hzq.infrastructure.persistent.po.RaffleActivitySku;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
 /**
  * @author 黄照权
  * @Date 2024/4/24
@@ -28,4 +30,11 @@ public interface IRaffleActivitySkuDao {
      * @param sku 活动sku
      */
     void clearActivitySkuStock(Long sku);
+
+    /**
+     * 通过活动Id查询所有SKU
+     * @param activityId 活动ID
+     * @return SKU列表
+     */
+    List<RaffleActivitySku> queryRaffleActivitySkuListByActivityId(Long activityId);
 }

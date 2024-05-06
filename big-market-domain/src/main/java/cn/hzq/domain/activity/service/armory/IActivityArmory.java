@@ -6,5 +6,16 @@ package cn.hzq.domain.activity.service.armory;
  * @Description 活动装配预热
  **/
 public interface IActivityArmory {
+    /**
+     * 通过活动Id装配活动
+     * @param activityId 活动Id
+     * @return 装配结果
+     */
+    boolean assembleActivitySkuByActivityId(Long activityId);
+    /**
+     * 通过活动SKU装配活动
+     * @param sku 活动sku
+     * @return 装配结果
+     */
     boolean assembleActivitySku(Long sku);
 }

@@ -2,8 +2,8 @@ package cn.hzq.trigger.api;
 
 import cn.hzq.trigger.api.dto.RaffleAwardListRequestDTO;
 import cn.hzq.trigger.api.dto.RaffleAwardListResponseDTO;
-import cn.hzq.trigger.api.dto.RaffleRequestDTO;
-import cn.hzq.trigger.api.dto.RaffleResponseDTO;
+import cn.hzq.trigger.api.dto.RaffleStrategyRequestDTO;
+import cn.hzq.trigger.api.dto.RaffleStrategyResponseDTO;
 import cn.hzq.types.model.Response;
 
 import java.util.List;
@@ -13,7 +13,7 @@ import java.util.List;
  * @Date 2024/3/16
  * @Description 抽奖服务接口
  **/
-public interface IRaffleService {
+public interface IRaffleStrategyService {
     /**
      * 策略装配接口
      *
@@ -36,5 +36,5 @@ public interface IRaffleService {
      * @param requestDTO 请求参数
      * @return 抽奖结果
      */
-    Response<RaffleResponseDTO> randomRaffle(RaffleRequestDTO requestDTO);
+    Response<RaffleStrategyResponseDTO> randomRaffle(RaffleStrategyRequestDTO requestDTO);
 }

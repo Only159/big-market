@@ -24,7 +24,9 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -439,6 +441,26 @@ public class ActivityRepository implements IActivityRepository {
                 .monthCount(raffleActivityAccountRes.getMonthCount())
                 .monthCountSurplus(raffleActivityAccountRes.getMonthCountSurplus())
                 .build();
+
+    }
+
+    @Override
+    public List<ActivitySkuEntity> queryActivitySkuListByActivityId(Long activityId) {
+        //查数据库
+        List<RaffleActivitySku> raffleActivitySkus = raffleActivitySkuDao.queryRaffleActivitySkuListByActivityId(activityId);
+        List<ActivitySkuEntity> activitySkuEntities = new ArrayList<>();
+
+        for (RaffleActivitySku activitySku : raffleActivitySkus) {
+            //转换对象
+            ActivitySkuEntity activitySkuEntity = new ActivitySkuEntity();
+            activitySkuEntity.setSku(activitySku.getSku());
+            activitySkuEntity.setActivityId(activitySku.getActivityId());
+            activitySkuEntity.setActivityCountId(activitySku.getActivityCountId());
+            activitySkuEntity.setStockCount(activitySku.getStockCount());
+            activitySkuEntity.setStockCountSurplus(activitySku.getStockCountSurplus());
+            activitySkuEntities.add(activitySkuEntity);
+        }
+        return activitySkuEntities;
 
     }
 }

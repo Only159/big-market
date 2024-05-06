@@ -5,6 +5,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * @author 黄照权
  * @Date 2024/5/5
@@ -16,6 +19,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ActivityAccountMonthEntity {
 
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM");
     /**
      * 用户ID
      */
@@ -36,6 +40,10 @@ public class ActivityAccountMonthEntity {
      * 月次数-剩余
      */
     private Integer monthCountSurplus;
+
+    public String currentMonth() {
+        return dateFormat.format(new Date());
+    }
 
 }
 

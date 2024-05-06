@@ -15,6 +15,19 @@ import org.apache.ibatis.annotations.Mapper;
 public interface IUserRaffleOrderDao {
     void insert(UserRaffleOrder userRaffleOrder);
 
+    /**
+     * 查询未使用的订单
+     * @param userRaffleOrderReq 抽奖订单实体对象
+     * @return 抽奖订单实体对象
+     */
+
     @DBRouter
     UserRaffleOrder queryNoUsedRaffleOrder(UserRaffleOrder userRaffleOrderReq);
+
+    /**
+     * 更新抽奖订单状态为已完成
+     * @param userRaffleOrderReq 抽奖订单实体对象
+     * @return 更新结果（受影响行数）
+     */
+    int updateUserRaffleOrderStateUsed(UserRaffleOrder userRaffleOrderReq);
 }

@@ -6,6 +6,7 @@ import cn.hzq.domain.activity.model.entity.*;
 import cn.hzq.domain.activity.model.valobj.ActivitySkuStockVO;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author 黄照权
@@ -134,4 +135,11 @@ public interface IActivityRepository {
      * @return 活动账户（总）额度实体对象
      */
     ActivityAccountEntity queryActivityAccountByUserId(String userId, Long activityId);
+
+    /**
+     * 通过活动ID查询所有SKU信息
+     * @param activityId 活动ID
+     * @return SKU 列表
+     */
+    List<ActivitySkuEntity> queryActivitySkuListByActivityId(Long activityId);
 }
