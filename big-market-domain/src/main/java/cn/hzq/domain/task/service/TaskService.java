@@ -16,6 +16,7 @@ import java.util.List;
 public class TaskService implements ITaskService {
     @Resource
     private ITaskRepository taskRepository;
+
     @Override
     public List<TaskEntity> queryNoSendMessageTaskList() {
         return taskRepository.queryNoSendMessageTaskList();
@@ -35,4 +36,5 @@ public class TaskService implements ITaskService {
     public void updateTaskSendMessageFail(TaskEntity task) {
         taskRepository.updateTaskSendMessageFail(task);
     }
+
 }

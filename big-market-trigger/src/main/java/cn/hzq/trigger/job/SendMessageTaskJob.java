@@ -27,44 +27,55 @@ public class SendMessageTaskJob {
     private IDBRouterStrategy dbRouter;
 
     @Scheduled(cron = "0/5 * * * * ?")
-    public void exec() {
+    public void exec_db01() {
         try {
-            //获取分库数量
-            int dbCount = dbRouter.dbCount();
-
-            //循环遍历每一个库
-            for (int dbInx = 1; dbInx <= dbCount; dbInx++) {
-                int finalDbInx = dbInx;
-                //多线程方式查询每一个库
-                executor.execute(() -> {
-                    try {
-                        // 分库路由
-                        dbRouter.setDBKey(finalDbInx);
-                        dbRouter.setTBKey(0);
-                        // 获取未发送或者发送失败的消息任务
-                        List<TaskEntity> taskEntityList = taskService.queryNoSendMessageTaskList();
-                        if (taskEntityList.isEmpty()) return;
-
-                        //发送MQ消息
-                        for (TaskEntity taskEntity : taskEntityList) {
-                            // 开启线程发送，提高发送效率。配置的线程池策略为 CallerRunsPolicy，在 ThreadPoolConfig 配置中有4个策略，
-                            executor.execute(() -> {
-                                try {
-                                    taskService.sendMessage(taskEntity);
-                                    taskService.updateTaskSendMessageCompleted(taskEntity);
-                                    log.info("定时任务，重新发送MQ消息 userId: {} topic: {}\", taskEntity.getUserId(), taskEntity.getTopic()");
-                                } catch (Exception e) {
-                                    log.error("定时任务，发送MQ消息失败 userId: {} topic: {}", taskEntity.getUserId(), taskEntity.getTopic());
-                                    taskService.updateTaskSendMessageFail(taskEntity);
-                                }
-                            });
-                        }
-                    } finally {
-                        dbRouter.clear();
-                    }
-                });
+            // 分库路由
+            dbRouter.setDBKey(1);
+            dbRouter.setTBKey(0);
+            // 获取未发送或者发送失败的消息任务
+            List<TaskEntity> taskEntityList = taskService.queryNoSendMessageTaskList();
+            if (taskEntityList.isEmpty()) return;
+            //发送MQ消息
+            for (TaskEntity taskEntity : taskEntityList) {
+                try {
+                    taskService.sendMessage(taskEntity);
+                    taskService.updateTaskSendMessageCompleted(taskEntity);
+                    log.info("定时任务，重新发送MQ消息 userId: {} topic: {}", taskEntity.getUserId(), taskEntity.getTopic());
+                } catch (Exception e) {
+                    log.error("定时任务，发送MQ消息失败 userId: {} topic: {}", taskEntity.getUserId(), taskEntity.getTopic(), e);
+                    taskService.updateTaskSendMessageFail(taskEntity);
+                }
             }
-        } catch (Exception e) {
+        } catch (
+                Exception e) {
+            log.error("定时任务，扫描MQ任务表发送MQ消息失败", e);
+        } finally {
+            dbRouter.clear();
+        }
+    }
+
+    @Scheduled(cron = "0/5 * * * * ?")
+    public void exec_db02() {
+        try {
+            // 分库路由
+            dbRouter.setDBKey(1);
+            dbRouter.setTBKey(0);
+            // 获取未发送或者发送失败的消息任务
+            List<TaskEntity> taskEntityList = taskService.queryNoSendMessageTaskList();
+            if (taskEntityList.isEmpty()) return;
+            //发送MQ消息
+            for (TaskEntity taskEntity : taskEntityList) {
+                try {
+                    taskService.sendMessage(taskEntity);
+                    taskService.updateTaskSendMessageCompleted(taskEntity);
+                    log.info("定时任务，重新发送MQ消息 userId: {} topic: {}", taskEntity.getUserId(), taskEntity.getTopic());
+                } catch (Exception e) {
+                    log.error("定时任务，发送MQ消息失败 userId: {} topic: {}", taskEntity.getUserId(), taskEntity.getTopic(), e);
+                    taskService.updateTaskSendMessageFail(taskEntity);
+                }
+            }
+        } catch (
+                Exception e) {
             log.error("定时任务，扫描MQ任务表发送MQ消息失败", e);
         } finally {
             dbRouter.clear();
