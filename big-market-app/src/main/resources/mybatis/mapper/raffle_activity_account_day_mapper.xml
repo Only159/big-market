@@ -38,12 +38,23 @@
           and activity_id = #{activityId}
           and day = #{day}
     </select>
-    <select id="queryRaffleActivityAccountDayPartakeCount" parameterType="cn.hzq.infrastructure.persistent.po.RaffleActivityAccountDay" resultType="Integer">
+    <select id="queryRaffleActivityAccountDayPartakeCount"
+            parameterType="cn.hzq.infrastructure.persistent.po.RaffleActivityAccountDay" resultType="Integer">
         select day_count - day_count_surplus
         from raffle_activity_account_day
         where user_id = #{userId}
           and activity_id = #{activityId}
           and day = #{day}
     </select>
+    <update id="addAccountQuota" parameterType="cn.hzq.infrastructure.persistent.po.RaffleActivityAccountDay">
+        update raffle_activity_account_day
+        set day_count         = day_count + #{dayCount},
+            day_count_surplus = day_count_surplus + #{dayCountSurplus},
+            update_time       = now()
+        where user_id = #{userId}
+          and activity_id = #{activityId}
+          and day = #{day}
+    </update>
+
 
 </mapper>

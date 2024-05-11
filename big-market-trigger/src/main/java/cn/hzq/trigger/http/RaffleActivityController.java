@@ -6,6 +6,9 @@ import cn.hzq.domain.activity.service.armory.IActivityArmory;
 import cn.hzq.domain.award.model.entity.UserAwardRecordEntity;
 import cn.hzq.domain.award.model.valobj.AwardStateVO;
 import cn.hzq.domain.award.service.IAwardService;
+import cn.hzq.domain.rebate.model.entity.BehaviorEntity;
+import cn.hzq.domain.rebate.model.valobj.BehaviorTypeVO;
+import cn.hzq.domain.rebate.service.IBehaviorRebateService;
 import cn.hzq.domain.strategy.model.entity.RaffleAwardEntity;
 import cn.hzq.domain.strategy.model.entity.RaffleFactorEntity;
 import cn.hzq.domain.strategy.service.IRaffleStrategy;
@@ -16,12 +19,15 @@ import cn.hzq.trigger.api.dto.ActivityDrawResponseDTO;
 import cn.hzq.types.enums.ResponseCode;
 import cn.hzq.types.exception.AppException;
 import cn.hzq.types.model.Response;
+import com.alibaba.fastjson2.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author 黄照权
@@ -33,6 +39,7 @@ import java.util.Date;
 @CrossOrigin("${app.config.cross-origin}")
 @RequestMapping("/api/${app.config.api-version}/raffle/activity")
 public class RaffleActivityController implements IRaffleActivityService {
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
 
     @Resource
     private IActivityArmory activityArmory;
@@ -45,6 +52,8 @@ public class RaffleActivityController implements IRaffleActivityService {
     private IRaffleStrategy raffleStrategy;
     @Resource
     private IAwardService awardService;
+    @Resource
+    private IBehaviorRebateService behaviorRebateService;
 
     @Override
     @GetMapping("armory")
@@ -56,22 +65,13 @@ public class RaffleActivityController implements IRaffleActivityService {
             // 策略装配
             strategyArmory.assembleLotteryStrategyByActivityId(activityId);
 
-            Response<Boolean> response =
-                    Response.<Boolean>builder()
-                            .code(ResponseCode.SUCCESS.getCode())
-                            .info(ResponseCode.SUCCESS.getInfo())
-                            .data(true)
-                            .build();
+            Response<Boolean> response = Response.<Boolean>builder().code(ResponseCode.SUCCESS.getCode()).info(ResponseCode.SUCCESS.getInfo()).data(true).build();
 
             log.info("活动装配，数据预热【完成】 activityId:{}", activityId);
             return response;
         } catch (Exception e) {
             log.error("活动装配，数据预热【失败】 activityId:{}", activityId, e);
-            return Response.<Boolean>builder()
-                    .code(ResponseCode.UN_ERROR.getCode())
-                    .info(ResponseCode.UN_ERROR.getInfo())
-                    .data(false)
-                    .build();
+            return Response.<Boolean>builder().code(ResponseCode.UN_ERROR.getCode()).info(ResponseCode.UN_ERROR.getInfo()).data(false).build();
         }
     }
 
@@ -90,48 +90,38 @@ public class RaffleActivityController implements IRaffleActivityService {
             log.info("活动抽奖，创建订单。userId:{} activityId:{} orderId:{}", orderEntity.getUserId(), orderEntity.getActivityId(), orderEntity.getOrderId());
 
             // 3、抽奖策略-执行抽奖
-            RaffleAwardEntity raffleAwardEntity = raffleStrategy.performRaffle(RaffleFactorEntity.builder()
-                    .userId(orderEntity.getUserId())
-                    .strategyId(orderEntity.getStrategyId())
-                    .endDateTime(orderEntity.getEndDateTime())
-                    .build());
+            RaffleAwardEntity raffleAwardEntity = raffleStrategy.performRaffle(RaffleFactorEntity.builder().userId(orderEntity.getUserId()).strategyId(orderEntity.getStrategyId()).endDateTime(orderEntity.getEndDateTime()).build());
             // 4、存放结果-写入中奖记录
-            UserAwardRecordEntity userAwardRecord =
-                    UserAwardRecordEntity.builder()
-                            .userId(orderEntity.getUserId())
-                            .activityId(orderEntity.getActivityId())
-                            .strategyId(orderEntity.getStrategyId())
-                            .orderId(orderEntity.getOrderId())
-                            .awardId(raffleAwardEntity.getAwardId())
-                            .awardTitle(raffleAwardEntity.getAwardTitle())
-                            .awardTime(new Date())
-                            .awardState(AwardStateVO.create)
-                            .build();
+            UserAwardRecordEntity userAwardRecord = UserAwardRecordEntity.builder().userId(orderEntity.getUserId()).activityId(orderEntity.getActivityId()).strategyId(orderEntity.getStrategyId()).orderId(orderEntity.getOrderId()).awardId(raffleAwardEntity.getAwardId()).awardTitle(raffleAwardEntity.getAwardTitle()).awardTime(new Date()).awardState(AwardStateVO.create).build();
             awardService.saveUserAwardRecord(userAwardRecord);
             // 5、中奖结果返回
-            return Response.<ActivityDrawResponseDTO>builder()
-                    .code(ResponseCode.SUCCESS.getCode())
-                    .info(ResponseCode.SUCCESS.getInfo())
-                    .data(ActivityDrawResponseDTO.builder()
-                            .awardId(raffleAwardEntity.getAwardId())
-                            .awardTitle(raffleAwardEntity.getAwardTitle())
-                            .awardIndex(raffleAwardEntity.getSort())
-                            .build())
-                    .build();
+            return Response.<ActivityDrawResponseDTO>builder().code(ResponseCode.SUCCESS.getCode()).info(ResponseCode.SUCCESS.getInfo()).data(ActivityDrawResponseDTO.builder().awardId(raffleAwardEntity.getAwardId()).awardTitle(raffleAwardEntity.getAwardTitle()).awardIndex(raffleAwardEntity.getSort()).build()).build();
 
         } catch (AppException e) {
             log.error("抽奖活动失败。 userId:{} activityId:{}", requestDTO.getUserId(), requestDTO.getActivityId(), e);
-            return Response.<ActivityDrawResponseDTO>builder()
-                    .code(e.getCode())
-                    .info(e.getInfo())
-                    .build();
+            return Response.<ActivityDrawResponseDTO>builder().code(e.getCode()).info(e.getInfo()).build();
 
         } catch (Exception e) {
             log.error("抽奖活动失败。 userId:{} activityId:{}", requestDTO.getUserId(), requestDTO.getActivityId(), e);
-            return Response.<ActivityDrawResponseDTO>builder()
-                    .code(ResponseCode.UN_ERROR.getCode())
-                    .info(ResponseCode.UN_ERROR.getInfo())
-                    .build();
+            return Response.<ActivityDrawResponseDTO>builder().code(ResponseCode.UN_ERROR.getCode()).info(ResponseCode.UN_ERROR.getInfo()).build();
+        }
+    }
+
+    @PostMapping("calendar_sing_rebate")
+    @Override
+    public Response<Boolean> calendarSingRebate(String userId) {
+        try {
+            log.info("日历签到返利开始。userId:{}", userId);
+            BehaviorEntity behaviorEntity = BehaviorEntity.builder().userId(userId).behaviorTypeVO(BehaviorTypeVO.SIGN).outBusinessNo(dateFormat.format(new Date())).build();
+            List<String> orderIds = behaviorRebateService.createOrder(behaviorEntity);
+            log.info("日历签到返利完成。userId:{}，orderIds:{}", userId, JSON.toJSONString(orderIds));
+            return Response.<Boolean>builder().code(ResponseCode.SUCCESS.getCode()).info(ResponseCode.SUCCESS.getInfo()).data(true).build();
+        } catch (AppException e) {
+            log.info("日历签到返利异常。userId:{}", userId, e);
+            return Response.<Boolean>builder().code(e.getCode()).info(e.getInfo()).build();
+        } catch (Exception e) {
+            log.info("日历签到返利失败。userId:{}", userId, e);
+            return Response.<Boolean>builder().code(ResponseCode.UN_ERROR.getCode()).info(ResponseCode.UN_ERROR.getInfo()).data(false).build();
         }
     }
 }

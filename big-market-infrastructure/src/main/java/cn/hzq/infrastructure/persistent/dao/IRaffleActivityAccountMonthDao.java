@@ -1,7 +1,6 @@
 package cn.hzq.infrastructure.persistent.dao;
 
 import cn.bugstack.middleware.db.router.annotation.DBRouter;
-import cn.bugstack.middleware.db.router.annotation.DBRouterStrategy;
 import cn.hzq.infrastructure.persistent.po.RaffleActivityAccountMonth;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -18,4 +17,11 @@ public interface IRaffleActivityAccountMonthDao {
     int updateActivityAccountMonthSubtractionQuota(RaffleActivityAccountMonth raffleActivityAccountMonth);
 
     void insertActivityAccountMonth(RaffleActivityAccountMonth raffleActivityAccountMonth);
+
+    /**
+     * 账户添加次数，存在更新，不存在不管
+     *
+     * @param raffleActivityAccountMonth 抽奖活动月次数
+     */
+    void addAccountQuota(RaffleActivityAccountMonth raffleActivityAccountMonth);
 }
