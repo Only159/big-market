@@ -1,9 +1,6 @@
 package cn.hzq.trigger.api;
 
-import cn.hzq.trigger.api.dto.RaffleAwardListRequestDTO;
-import cn.hzq.trigger.api.dto.RaffleAwardListResponseDTO;
-import cn.hzq.trigger.api.dto.RaffleStrategyRequestDTO;
-import cn.hzq.trigger.api.dto.RaffleStrategyResponseDTO;
+import cn.hzq.trigger.api.dto.*;
 import cn.hzq.types.model.Response;
 
 import java.util.List;
@@ -37,4 +34,13 @@ public interface IRaffleStrategyService {
      * @return 抽奖结果
      */
     Response<RaffleStrategyResponseDTO> randomRaffle(RaffleStrategyRequestDTO requestDTO);
+
+    /**
+     * 通过活动Id查询权重配置信息
+     *
+     * @param request 请求参数
+     * @return 权重值以及奖品信息
+     */
+    Response<List<RaffleStrategyRuleWeightResponseDTO>> queryRaffleStrategyRuleWeight(RaffleStrategyRuleWeightRequestDTO request);
+
 }

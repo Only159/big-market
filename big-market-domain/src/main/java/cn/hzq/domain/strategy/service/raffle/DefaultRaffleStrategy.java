@@ -3,6 +3,7 @@ package cn.hzq.domain.strategy.service.raffle;
 import cn.hzq.domain.strategy.model.entity.StrategyAwardEntity;
 import cn.hzq.domain.strategy.model.entity.StrategyAwardStockKeyVO;
 import cn.hzq.domain.strategy.model.valobj.RuleTreeVO;
+import cn.hzq.domain.strategy.model.valobj.RuleWeightVO;
 import cn.hzq.domain.strategy.model.valobj.StrategyAwardRuleModelVO;
 import cn.hzq.domain.strategy.repository.IStrategyRepository;
 import cn.hzq.domain.strategy.service.AbstractRaffleStrategy;
@@ -65,7 +66,7 @@ public class DefaultRaffleStrategy extends AbstractRaffleStrategy implements IRa
         }
         //根据规则树过滤结果
         IDecisionTreeEngine iDecisionTreeEngine = defaultTreeFactory.openLogicTree(ruleTreeVO);
-        return iDecisionTreeEngine.process(userId, strategyId, awardId,endDateTime);
+        return iDecisionTreeEngine.process(userId, strategyId, awardId, endDateTime);
     }
 
     @Override
@@ -92,6 +93,17 @@ public class DefaultRaffleStrategy extends AbstractRaffleStrategy implements IRa
     @Override
     public Map<String, Integer> queryAwardRuleLockCount(String[] treeIds) {
         return repository.queryAwardRuleLockCount(treeIds);
+    }
+
+    @Override
+    public List<RuleWeightVO> queryAwardRuleWeight(Long strategyId) {
+        return repository.queryAwardRuleWeight(strategyId);
+    }
+
+    @Override
+    public List<RuleWeightVO> queryAwardRuleWeightByActivityId(Long activityId) {
+        Long strategyId = repository.queryStrategyIdByActivityId(activityId);
+        return queryAwardRuleWeight(strategyId);
     }
 }
 

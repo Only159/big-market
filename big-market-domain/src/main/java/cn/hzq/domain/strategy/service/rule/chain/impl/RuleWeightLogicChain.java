@@ -23,11 +23,10 @@ public class RuleWeightLogicChain extends AbstractLogicChain {
     private IStrategyRepository repository;
     @Resource
     private IStrategyDispatch strategyDispatch;
-    public Long userScore = 0L;
 
     @Override
     public DefaultChainFactory.StrategyAwardVO logic(String userId, Long strategyId) {
-        log.info("抽奖责任链-权重开始 userId:{} strategy:{} ruleModel:{}", userId,strategyId,ruleModel());
+        log.info("抽奖责任链-权重开始 userId:{} strategy:{} ruleModel:{}", userId, strategyId, ruleModel());
 
         //查询权重配置信息
         String ruleValue = repository.queryStrategyRuleValue(strategyId, ruleModel());
@@ -42,22 +41,24 @@ public class RuleWeightLogicChain extends AbstractLogicChain {
         // 2. 转换Keys值，并默认排序
         List<Long> analyticalSortedKeys = new ArrayList<>(analyticalValueGroup.keySet());
         Collections.sort(analyticalSortedKeys);
-
-        // 3. 找出最小符合的值，也就是【4500 积分，能找到 4000:102,103,104,105】、【5500 积分，能找到 5000:102,103,104,105,106,107】
+        // 3.查询账户抽奖次数
+        Integer userScore = repository.queryTotalUserRaffleCount(userId, strategyId);
+        //4. 找出最小符合的值，也就是【4500 积分，能找到 4000:102,103,104,105】、【5500 积分，能找到 5000:102,103,104,105,106,107】
         Long nextValue = analyticalSortedKeys.stream()
                 .filter(key -> userScore >= key)
                 .max(Comparator.naturalOrder())
                 .orElse(null);
-        if (null != nextValue){
+        // 5.权重抽奖
+        if (null != nextValue) {
             Integer awardId = strategyDispatch.getRandomAwardId(strategyId, nextValue.toString());
-            log.info("抽奖责任链-权重接管 userId:{} strategy:{} ruleModel:{} award:{}", userId,strategyId,ruleModel(),awardId);
+            log.info("抽奖责任链-权重接管 userId:{} strategy:{} ruleModel:{} award:{}", userId, strategyId, ruleModel(), awardId);
             return DefaultChainFactory.StrategyAwardVO.builder()
                     .awardId(awardId)
                     .logicModel(ruleModel())
                     .build();
         }
-        log.info("抽奖责任链-权重放行 userId:{} strategy:{} ruleModel:{}", userId,strategyId,ruleModel());
-        return next().logic(userId,strategyId);
+        log.info("抽奖责任链-权重放行 userId:{} strategy:{} ruleModel:{}", userId, strategyId, ruleModel());
+        return next().logic(userId, strategyId);
     }
 
     @Override

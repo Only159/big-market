@@ -5,6 +5,7 @@ import cn.hzq.domain.strategy.model.entity.StrategyAwardStockKeyVO;
 import cn.hzq.domain.strategy.model.entity.StrategyEntity;
 import cn.hzq.domain.strategy.model.entity.StrategyRuleEntity;
 import cn.hzq.domain.strategy.model.valobj.RuleTreeVO;
+import cn.hzq.domain.strategy.model.valobj.RuleWeightVO;
 import cn.hzq.domain.strategy.model.valobj.StrategyAwardRuleModelVO;
 
 import java.math.BigDecimal;
@@ -58,11 +59,12 @@ public interface IStrategyRepository {
     /**
      * 缓存key，decr方式扣减库存
      *
-     * @param cacheKey key
+     * @param cacheKey    key
      * @param endDateTime 活动结束时间
      * @return 扣减结果
      */
     Boolean subtractionAwardStock(String cacheKey, Date endDateTime);
+
     /**
      * 缓存key，decr方式扣减库存
      *
@@ -93,14 +95,16 @@ public interface IStrategyRepository {
 
     /**
      * 根据策略Id+奖品Id的唯一值组合,查询奖品信息
+     *
      * @param strategyId 策略Id
-     * @param awardId 奖品Id
+     * @param awardId    奖品Id
      * @return 奖品信息
      */
     StrategyAwardEntity queryStrategyAwardEntity(Long strategyId, Integer awardId);
 
     /**
      * 通过活动Id查询策略Id
+     *
      * @param activityId 活动Id
      * @return 策略Id
      */
@@ -108,7 +112,8 @@ public interface IStrategyRepository {
 
     /**
      * 通过策略Id和 用户Id查询用户当日可以用抽奖次数
-     * @param userId 用户id
+     *
+     * @param userId     用户id
      * @param strategyId 策略Id
      * @return 用户可用抽奖次数
      */
@@ -116,8 +121,25 @@ public interface IStrategyRepository {
 
     /**
      * 通过规则Id列表查询对应配置
+     *
      * @param treeIds 规则Id列表
      * @return 配置值
      */
     Map<String, Integer> queryAwardRuleLockCount(String[] treeIds);
+
+    /**
+     * 通过策略Id和 用户Id查询用户总可用抽奖次数
+     *
+     * @param userId     用户id
+     * @param strategyId 策略Id
+     * @return 用户可用抽奖次数
+     */
+    Integer queryTotalUserRaffleCount(String userId, Long strategyId);
+
+    /**
+     * 通过策略Id查询规则权重配置
+     * @param strategyId 策略Id
+     * @return 规则权重配置
+     */
+    List<RuleWeightVO> queryAwardRuleWeight(Long strategyId);
 }

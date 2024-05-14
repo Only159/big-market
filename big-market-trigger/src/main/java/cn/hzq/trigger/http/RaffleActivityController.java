@@ -1,12 +1,15 @@
 package cn.hzq.trigger.http;
 
+import cn.hzq.domain.activity.model.entity.ActivityAccountEntity;
 import cn.hzq.domain.activity.model.entity.UserRaffleOrderEntity;
+import cn.hzq.domain.activity.service.IRaffleActivityAccountQuotaService;
 import cn.hzq.domain.activity.service.IRaffleActivityPartakeService;
 import cn.hzq.domain.activity.service.armory.IActivityArmory;
 import cn.hzq.domain.award.model.entity.UserAwardRecordEntity;
 import cn.hzq.domain.award.model.valobj.AwardStateVO;
 import cn.hzq.domain.award.service.IAwardService;
 import cn.hzq.domain.rebate.model.entity.BehaviorEntity;
+import cn.hzq.domain.rebate.model.entity.BehaviorRebateOrderEntity;
 import cn.hzq.domain.rebate.model.valobj.BehaviorTypeVO;
 import cn.hzq.domain.rebate.service.IBehaviorRebateService;
 import cn.hzq.domain.strategy.model.entity.RaffleAwardEntity;
@@ -16,6 +19,8 @@ import cn.hzq.domain.strategy.service.armory.IStrategyArmory;
 import cn.hzq.trigger.api.IRaffleActivityService;
 import cn.hzq.trigger.api.dto.ActivityDrawRequestDTO;
 import cn.hzq.trigger.api.dto.ActivityDrawResponseDTO;
+import cn.hzq.trigger.api.dto.UserActivityAccountRequestDTO;
+import cn.hzq.trigger.api.dto.UserActivityAccountResponseDTO;
 import cn.hzq.types.enums.ResponseCode;
 import cn.hzq.types.exception.AppException;
 import cn.hzq.types.model.Response;
@@ -45,7 +50,8 @@ public class RaffleActivityController implements IRaffleActivityService {
     private IActivityArmory activityArmory;
     @Resource
     private IStrategyArmory strategyArmory;
-
+    @Resource
+    private IRaffleActivityAccountQuotaService raffleActivityAccountQuotaService;
     @Resource
     private IRaffleActivityPartakeService raffleActivityPartakeService;
     @Resource
@@ -124,4 +130,67 @@ public class RaffleActivityController implements IRaffleActivityService {
             return Response.<Boolean>builder().code(ResponseCode.UN_ERROR.getCode()).info(ResponseCode.UN_ERROR.getInfo()).data(false).build();
         }
     }
+
+    @PostMapping("is_calendar_sing_rebate")
+    @Override
+    public Response<Boolean> isCalendarSingRebate(String userId) {
+        try {
+            log.info("查询用户是否完成日历签到返利开始，userId:{}", userId);
+            String outBusinessNo = dateFormat.format(new Date());
+            List<BehaviorRebateOrderEntity> behaviorRebateOrderEntities = behaviorRebateService.queryOrderByOutBusinessNo(userId, outBusinessNo);
+            log.info("查询用户是否完成日历签到返利完成，userId:{},结果：{}", userId, behaviorRebateOrderEntities.size());
+            return Response.<Boolean>builder()
+                    .code(ResponseCode.SUCCESS.getCode())
+                    .info(ResponseCode.SUCCESS.getInfo())
+                    .data(!behaviorRebateOrderEntities.isEmpty())
+                    .build();
+        } catch (Exception e) {
+            log.info("查询用户是否完成日历签到返利失败，userId:{}", userId, e);
+            return Response.<Boolean>builder()
+                    .code(ResponseCode.UN_ERROR.getCode())
+                    .info(ResponseCode.UN_ERROR.getInfo())
+                    .data(false)
+                    .build();
+        }
+    }
+
+    /**
+     * 通过用户ID和活动ID查询活动账户次数
+     *
+     * @param requestDTO 请求参数对象
+     * @return 账户次数
+     */
+    @PostMapping("query_user_activity_account")
+    @Override
+    public Response<UserActivityAccountResponseDTO> queryUserActivityAccount(UserActivityAccountRequestDTO requestDTO) {
+        try {
+            log.info("查询用户活动账户开始。userId:{},activityId:{}", requestDTO.getActivityId(), requestDTO.getActivityId());
+            // 1、参数校验
+            if (StringUtils.isBlank(requestDTO.getUserId()) || null == requestDTO.getActivityId()) {
+                throw new AppException(ResponseCode.ILLEGAL_PARAMETER.getCode(), ResponseCode.ILLEGAL_PARAMETER.getInfo());
+            }
+            ActivityAccountEntity activityAccountEntity = raffleActivityAccountQuotaService.queryActivityAccountEntity(requestDTO.getUserId(), requestDTO.getActivityId());
+            UserActivityAccountResponseDTO userActivityAccountResponseDTO = UserActivityAccountResponseDTO.builder()
+                    .totalCount(activityAccountEntity.getTotalCount())
+                    .totalCountSurplus(activityAccountEntity.getTotalCountSurplus())
+                    .dayCount(activityAccountEntity.getDayCount())
+                    .dayCountSurplus(activityAccountEntity.getDayCountSurplus())
+                    .monthCount(activityAccountEntity.getMonthCount())
+                    .monthCountSurplus(activityAccountEntity.getMonthCountSurplus())
+                    .build();
+            log.info("查询用户活动账户完成。userId:{},activityId:{}，dto：{}", requestDTO.getActivityId(), requestDTO.getActivityId(), JSON.toJSONString(userActivityAccountResponseDTO));
+            return Response.<UserActivityAccountResponseDTO>builder()
+                    .code(ResponseCode.SUCCESS.getCode())
+                    .info(ResponseCode.SUCCESS.getInfo())
+                    .data(userActivityAccountResponseDTO)
+                    .build();
+        } catch (AppException e) {
+            log.error("查询用户活动账户失败。userId:{},activityId:{}", requestDTO.getActivityId(), requestDTO.getActivityId(), e);
+            return Response.<UserActivityAccountResponseDTO>builder().code(e.getCode()).info(e.getInfo()).build();
+        } catch (Exception e) {
+            log.error("查询用户活动账户失败。userId:{},activityId:{}", requestDTO.getActivityId(), requestDTO.getActivityId(), e);
+            return Response.<UserActivityAccountResponseDTO>builder().code(ResponseCode.UN_ERROR.getCode()).info(ResponseCode.UN_ERROR.getInfo()).build();
+        }
+    }
 }
+

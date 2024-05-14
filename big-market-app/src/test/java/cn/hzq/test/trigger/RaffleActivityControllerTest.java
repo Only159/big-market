@@ -3,6 +3,8 @@ package cn.hzq.test.trigger;
 import cn.hzq.trigger.api.IRaffleActivityService;
 import cn.hzq.trigger.api.dto.ActivityDrawRequestDTO;
 import cn.hzq.trigger.api.dto.ActivityDrawResponseDTO;
+import cn.hzq.trigger.api.dto.UserActivityAccountRequestDTO;
+import cn.hzq.trigger.api.dto.UserActivityAccountResponseDTO;
 import cn.hzq.types.model.Response;
 import com.alibaba.fastjson2.JSON;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +31,32 @@ public class RaffleActivityControllerTest {
     public void test_armory() {
         Response<Boolean> success = raffleActivityService.armory(100301L);
         log.info("活动装配测试结果:{}", success);
+    }
+
+    @Test
+    public void test_calendarSingRebate() {
+        Response<Boolean> response = raffleActivityService.calendarSingRebate("hzq");
+        log.info("测试结果：{}", response.getData());
+    }
+
+    @Test
+    public void test_isCalendarSingRebate() {
+        UserActivityAccountRequestDTO requestDTO = UserActivityAccountRequestDTO.builder()
+                .activityId(100301L)
+                .userId("hzq")
+                .build();
+        Response<Boolean> calendarSingRebate = raffleActivityService.isCalendarSingRebate("hzq");
+        log.info("测试结果：{}", JSON.toJSONString(calendarSingRebate));
+    }
+
+    @Test
+    public void test_queryUserActivityAccount() {
+        UserActivityAccountRequestDTO requestDTO = UserActivityAccountRequestDTO.builder()
+                .activityId(100301L)
+                .userId("hzq")
+                .build();
+        Response<UserActivityAccountResponseDTO> userActivityAccountResponseDTOResponse = raffleActivityService.queryUserActivityAccount(requestDTO);
+        log.info("测试结果：{}", JSON.toJSONString(userActivityAccountResponseDTOResponse));
     }
 
     @Test

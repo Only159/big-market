@@ -1,6 +1,7 @@
 package cn.hzq.domain.rebate.repository;
 
 import cn.hzq.domain.rebate.model.aggregate.BehaviorRebateAggregate;
+import cn.hzq.domain.rebate.model.entity.BehaviorRebateOrderEntity;
 import cn.hzq.domain.rebate.model.valobj.BehaviorTypeVO;
 import cn.hzq.domain.rebate.model.valobj.DailyBehaviorRebateVO;
 
@@ -28,4 +29,12 @@ public interface IBehaviorRebateRepository {
      * @return 行为配置信息
      */
     List<DailyBehaviorRebateVO> queryDailyBehaviorRebateConfig(BehaviorTypeVO behaviorTypeVO);
+
+    /**
+     * 通过用户Id和外部透传业务Id查询已经产生的订单
+     * @param userId 用户Id
+     * @param outBusinessNo 外部透传Id
+     * @return 订单实体对象
+     */
+    List<BehaviorRebateOrderEntity> queryOrderByOutBusinessNo(String userId, String outBusinessNo);
 }

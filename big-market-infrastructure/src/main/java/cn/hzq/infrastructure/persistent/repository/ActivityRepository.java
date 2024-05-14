@@ -489,8 +489,76 @@ public class ActivityRepository implements IActivityRepository {
         RaffleActivityAccountDay raffleActivityAccountDay = new RaffleActivityAccountDay();
         raffleActivityAccountDay.setUserId(userId);
         raffleActivityAccountDay.setActivityId(activityId);
-        raffleActivityAccountDay.setDay(raffleActivityAccountDay.currentDay());
+        raffleActivityAccountDay.setDay(RaffleActivityAccountDay.currentDay());
         Integer dayPartakeCount = raffleActivityAccountDayDao.queryRaffleActivityAccountDayPartakeCount(raffleActivityAccountDay);
         return null == dayPartakeCount ? 0 : dayPartakeCount;
+    }
+
+    @Override
+    public ActivityAccountEntity queryActivityAccountEntity(String userId, Long activityId) {
+        // 查询总账户
+        RaffleActivityAccount raffleActivityAccount = raffleActivityAccountDao.queryActivityAccountByUserId(RaffleActivityAccount.builder()
+                .userId(userId)
+                .activityId(activityId)
+                .build());
+        if (null == raffleActivityAccount) {
+            return ActivityAccountEntity.builder()
+                    .userId(userId)
+                    .activityId(activityId)
+                    .totalCount(0)
+                    .totalCountSurplus(0)
+                    .dayCount(0)
+                    .dayCountSurplus(0)
+                    .monthCount(0)
+                    .monthCountSurplus(0)
+                    .build();
+
+        }
+        // 查询当月账户
+        RaffleActivityAccountMonth raffleActivityAccountMonth = raffleActivityAccountMonthDao.queryActivityAccountMonthByUserId(RaffleActivityAccountMonth.builder()
+                .userId(userId)
+                .activityId(activityId)
+                .month(RaffleActivityAccountMonth.currentMonth())
+                .build());
+        // 查询当日账户
+        RaffleActivityAccountDay raffleActivityAccountDay = raffleActivityAccountDayDao.queryActivityAccountDayByUserId(RaffleActivityAccountDay.builder()
+                .userId(userId)
+                .activityId(activityId)
+                .day(RaffleActivityAccountDay.currentDay())
+                .build());
+
+        ActivityAccountEntity activityAccountEntity = new ActivityAccountEntity();
+        activityAccountEntity.setUserId(userId);
+        activityAccountEntity.setActivityId(activityId);
+        activityAccountEntity.setTotalCount(raffleActivityAccount.getTotalCount());
+        activityAccountEntity.setTotalCountSurplus(raffleActivityAccount.getTotalCountSurplus());
+        // 月账户为空 使用总账户
+        if (null == raffleActivityAccountMonth) {
+            activityAccountEntity.setMonthCount(raffleActivityAccount.getMonthCount());
+            activityAccountEntity.setMonthCountSurplus(raffleActivityAccount.getMonthCountSurplus());
+        } else {
+            activityAccountEntity.setMonthCount(raffleActivityAccountMonth.getMonthCount());
+            activityAccountEntity.setMonthCountSurplus(raffleActivityAccountMonth.getMonthCountSurplus());
+        }
+        // 日账户为空 使用总账户
+        if (null == raffleActivityAccountDay) {
+            activityAccountEntity.setDayCount(raffleActivityAccount.getDayCount());
+            activityAccountEntity.setDayCountSurplus(raffleActivityAccount.getDayCountSurplus());
+        } else {
+            activityAccountEntity.setDayCount(raffleActivityAccountDay.getDayCount());
+            activityAccountEntity.setDayCountSurplus(raffleActivityAccountDay.getDayCountSurplus());
+        }
+
+        return activityAccountEntity;
+    }
+
+    @Override
+    public Integer queryRaffleActivityAccountPartakeCount(String userId, Long activityId) {
+        RaffleActivityAccount raffleActivityAccount = raffleActivityAccountDao.queryActivityAccountByUserId(RaffleActivityAccount.builder()
+                .userId(userId)
+                .activityId(activityId)
+                .build());
+        if (raffleActivityAccount == null) return 0;
+        return raffleActivityAccount.getTotalCount() - raffleActivityAccount.getTotalCountSurplus();
     }
 }

@@ -1,5 +1,6 @@
 package cn.hzq.domain.activity.service;
 
+import cn.hzq.domain.activity.model.entity.ActivityAccountEntity;
 import cn.hzq.domain.activity.model.entity.SkuRechargeEntity;
 
 /**
@@ -21,10 +22,28 @@ public interface IRaffleActivityAccountQuotaService {
 
     /**
      * 查询用户当天已经参加的抽奖次数
+     *
      * @param activityId 活动Id
-     * @param userId 用户Id
+     * @param userId     用户Id
      * @return 用于已经参加的抽奖次数
      */
 
     Integer queryRaffleActivityAccountDayPartakeCount(Long activityId, String userId);
+
+    /**
+     * 查询活动账户次数
+     *
+     * @param userId     用户Id
+     * @param activityId 活动Id
+     * @return 活动账户实体对象
+     */
+    ActivityAccountEntity queryActivityAccountEntity(String userId, Long activityId);
+    /**
+     * 查询用户已经参加的抽奖次数
+     *
+     * @param activityId 活动Id
+     * @param userId     用户Id
+     * @return 用户已经参加的抽奖次数
+     */
+    Integer queryRaffleActivityAccountPartakeCount(String userId, Long activityId);
 }

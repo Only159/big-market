@@ -6,6 +6,7 @@ import cn.hzq.domain.strategy.model.entity.StrategyEntity;
 import cn.hzq.domain.strategy.model.entity.StrategyRuleEntity;
 import cn.hzq.domain.strategy.model.valobj.*;
 import cn.hzq.domain.strategy.repository.IStrategyRepository;
+import cn.hzq.domain.strategy.service.rule.chain.factory.DefaultChainFactory;
 import cn.hzq.infrastructure.persistent.dao.*;
 import cn.hzq.infrastructure.persistent.po.*;
 import cn.hzq.infrastructure.persistent.redis.IRedisService;
@@ -50,6 +51,8 @@ public class StrategyRepository implements IStrategyRepository {
     private IRaffleActivityDao raffleActivityDao;
     @Resource
     private IRaffleActivityAccountDayDao raffleActivityAccountDayDao;
+    @Resource
+    private IRaffleActivityAccountDao raffleActivityAccountDao;
 
     @Override
     public List<StrategyAwardEntity> queryStrategyAwardList(Long strategyId) {
@@ -322,6 +325,67 @@ public class StrategyRepository implements IStrategyRepository {
     }
 
     @Override
+    public Integer queryTotalUserRaffleCount(String userId, Long strategyId) {
+        // 查询活动Id
+        Long activityId = raffleActivityDao.queryActivityIdByStrategyId(strategyId);
+        // 封装参数
+        RaffleActivityAccount raffleActivityAccountReq = new RaffleActivityAccount();
+        raffleActivityAccountReq.setUserId(userId);
+        raffleActivityAccountReq.setActivityId(activityId);
+        RaffleActivityAccount raffleActivityAccount = raffleActivityAccountDao.queryActivityAccountByUserId(raffleActivityAccountReq);
+        if (raffleActivityAccount == null) return 0;
+        //总次数-剩余的 等于总参与的
+        return raffleActivityAccount.getTotalCount() - raffleActivityAccount.getTotalCountSurplus();
+    }
+
+    @Override
+    public List<RuleWeightVO> queryAwardRuleWeight(Long strategyId) {
+        //优先从缓存获取
+        String cacheKey = Constants.RedisKey.STRATEGY_RULE_WEIGHT_KEY + strategyId;
+        List<RuleWeightVO> ruleWeightVOS = redisService.getValue(cacheKey);
+        if (ruleWeightVOS != null) return ruleWeightVOS;
+        ruleWeightVOS = new ArrayList<>();
+
+        // 查询权重配置信息
+        StrategyRule strategyRuleReq = new StrategyRule();
+        strategyRuleReq.setStrategyId(strategyId);
+        strategyRuleReq.setRuleModel(DefaultChainFactory.LogicModel.RULE_WEIGHT.getCode());
+        String ruleValue = strategyRuleDao.queryStrategyRuleValue(strategyRuleReq);
+
+        // 借助实体对象对值进行解析
+        StrategyRuleEntity strategyRuleEntity = new StrategyRuleEntity();
+        strategyRuleEntity.setRuleModel(DefaultChainFactory.LogicModel.RULE_WEIGHT.getCode());
+        strategyRuleEntity.setRuleValue(ruleValue);
+        //String:权重  List<Integer> 奖品Id列表
+        Map<String, List<Integer>> ruleWeightValues = strategyRuleEntity.getRuleWeightValues();
+        Set<String> ruleWeightKeys = ruleWeightValues.keySet();
+        // 遍历权重值
+        for (String ruleWeightKey : ruleWeightKeys) {
+            //获取权重值对应的奖品Id列表
+            List<Integer> awardIds = ruleWeightValues.get(ruleWeightKey);
+            ArrayList<RuleWeightVO.Award> awardArrayList = new ArrayList<>();
+
+            //获取策略奖品信息  TODO 可以修改为一次性从数据库查出 缓存到redis
+            for (Integer awardId : awardIds) {
+                StrategyAwardEntity strategyAwardEntity = this.queryStrategyAwardEntity(strategyId, awardId);
+                awardArrayList.add(RuleWeightVO.Award.builder()
+                        .awardId(awardId)
+                        .awardTitle(strategyAwardEntity.getAwardTitle())
+                        .build());
+            }
+            ruleWeightVOS.add(RuleWeightVO.builder()
+                    .ruleValue(ruleValue)
+                    .weight(Integer.valueOf(ruleWeightKey))
+                    .awardIds(awardIds)
+                    .awardList(awardArrayList)
+                    .build());
+        }
+        //设置缓存到redis
+        redisService.setValue(cacheKey, ruleWeightVOS);
+        return ruleWeightVOS;
+    }
+
+    @Override
     public Integer queryTodayUserRaffleCount(String userId, Long strategyId) {
         // 查询活动Id
         Long activityId = raffleActivityDao.queryActivityIdByStrategyId(strategyId);
@@ -329,7 +393,7 @@ public class StrategyRepository implements IStrategyRepository {
         RaffleActivityAccountDay raffleActivityAccountDayReq = new RaffleActivityAccountDay();
         raffleActivityAccountDayReq.setUserId(userId);
         raffleActivityAccountDayReq.setActivityId(activityId);
-        raffleActivityAccountDayReq.setDay(raffleActivityAccountDayReq.currentDay());
+        raffleActivityAccountDayReq.setDay(RaffleActivityAccountDay.currentDay());
         RaffleActivityAccountDay raffleActivityAccountDay = raffleActivityAccountDayDao.queryActivityAccountDayByUserId(raffleActivityAccountDayReq);
         if (raffleActivityAccountDay == null) return 0;
         //总次数-剩余的 等于今天参与的
