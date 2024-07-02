@@ -8,7 +8,6 @@ import cn.hzq.domain.strategy.model.valobj.RuleTreeVO;
 import cn.hzq.domain.strategy.model.valobj.RuleWeightVO;
 import cn.hzq.domain.strategy.model.valobj.StrategyAwardRuleModelVO;
 
-import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -22,7 +21,7 @@ import java.util.Map;
 public interface IStrategyRepository {
     List<StrategyAwardEntity> queryStrategyAwardList(Long strategyId);
 
-    void storeStrategyAwardSearchRateTable(String key, BigDecimal rateRange, HashMap<Integer, Integer> strategyAwardSearchRateTable);
+    void storeStrategyAwardSearchRateTable(String key, Integer rateRange, HashMap<Integer, Integer> strategyAwardSearchRateTable);
 
     int getRateRange(Long strategyId);
 
@@ -138,6 +137,7 @@ public interface IStrategyRepository {
 
     /**
      * 通过策略Id查询规则权重配置
+     *
      * @param strategyId 策略Id
      * @return 规则权重配置
      */

@@ -2,8 +2,7 @@ version: '3.8'
 # 命令执行 docker-compose -f docker-compose-app.yml up -d
 services:
   big-market-app:
-    #docker 镜像名称
-    image: fuzhengwei/big-market-app:1.0
+    image: only159357/big-mdockarket-app:2.0
     container_name: big-market-app
     restart: always
     ports:
@@ -13,15 +12,11 @@ services:
       - SERVER_PORT=8091
       - APP_CONFIG_API_VERSION=v1
       - APP_CONFIG_CROSS_ORIGIN=*
-      #数据源 账户名
       - SPRING_DATASOURCE_USERNAME=root
-      #数据源 密码
       - SPRING_DATASOURCE_PASSWORD=159357
-      #数据源 地址
       - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/big_market?serverTimezone=UTC&characterEncoding=utf8&autoReconnect=true&serverTimezone=Asia/Shanghai
       - SPRING_DATASOURCE_DRIVER_CLASS_NAME=com.mysql.cj.jdbc.Driver
       - SPRING_HIKARI_POOL_NAME=Retail_HikariCP
-      #rdeis 配置
       - REDIS_SDK_CONFIG_HOST=redis
       - REDIS_SDK_CONFIG_PORT=6379
     volumes:
@@ -35,8 +30,7 @@ services:
         max-file: "3"
   big-market-front-app:
     container_name: big-market-front-app
-    #docker 镜像名称
-    image: fuzhengwei/big-market-front-app:1.1
+    image: only159357/big-market-front-app:2.0
     restart: always
     networks:
       - my-network
