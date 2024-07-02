@@ -1,5 +1,6 @@
 package cn.hzq.domain.award.service;
 
+import cn.hzq.domain.award.model.entity.DistributeAwardEntity;
 import cn.hzq.domain.award.model.entity.UserAwardRecordEntity;
 
 /**
@@ -13,4 +14,10 @@ public interface IAwardService {
      * @param userAwardRecordEntity 用户中奖记录实体对象
      */
     void saveUserAwardRecord(UserAwardRecordEntity userAwardRecordEntity);
+    /**
+     * 配送发货奖品
+     * @param distributeAwardEntity 配送奖品实体对象
+     */
+    void distributeAward(DistributeAwardEntity distributeAwardEntity);
+
 }

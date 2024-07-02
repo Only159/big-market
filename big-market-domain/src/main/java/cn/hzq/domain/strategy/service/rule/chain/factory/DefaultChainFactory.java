@@ -61,6 +61,10 @@ public class DefaultChainFactory {
          * 抽奖奖品类型【默认抽奖/黑名单抽奖/权重抽奖】
          */
         private String logicModel;
+        /**
+         * 抽奖奖品规则
+         */
+        private String awardRuleValue;
     }
 
     @Getter

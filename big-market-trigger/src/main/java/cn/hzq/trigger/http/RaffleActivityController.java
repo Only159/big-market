@@ -98,7 +98,16 @@ public class RaffleActivityController implements IRaffleActivityService {
             // 3、抽奖策略-执行抽奖
             RaffleAwardEntity raffleAwardEntity = raffleStrategy.performRaffle(RaffleFactorEntity.builder().userId(orderEntity.getUserId()).strategyId(orderEntity.getStrategyId()).endDateTime(orderEntity.getEndDateTime()).build());
             // 4、存放结果-写入中奖记录
-            UserAwardRecordEntity userAwardRecord = UserAwardRecordEntity.builder().userId(orderEntity.getUserId()).activityId(orderEntity.getActivityId()).strategyId(orderEntity.getStrategyId()).orderId(orderEntity.getOrderId()).awardId(raffleAwardEntity.getAwardId()).awardTitle(raffleAwardEntity.getAwardTitle()).awardTime(new Date()).awardState(AwardStateVO.create).build();
+            UserAwardRecordEntity userAwardRecord = UserAwardRecordEntity.builder()
+                    .userId(orderEntity.getUserId())
+                    .activityId(orderEntity.getActivityId())
+                    .strategyId(orderEntity.getStrategyId())
+                    .orderId(orderEntity.getOrderId())
+                    .awardId(raffleAwardEntity.getAwardId())
+                    .awardTitle(raffleAwardEntity.getAwardTitle())
+                    .awardTime(new Date()).awardState(AwardStateVO.create)
+                    .awardConfig(raffleAwardEntity.getAwardConfig())
+                    .build();
             awardService.saveUserAwardRecord(userAwardRecord);
             // 5、中奖结果返回
             return Response.<ActivityDrawResponseDTO>builder().code(ResponseCode.SUCCESS.getCode()).info(ResponseCode.SUCCESS.getInfo()).data(ActivityDrawResponseDTO.builder().awardId(raffleAwardEntity.getAwardId()).awardTitle(raffleAwardEntity.getAwardTitle()).awardIndex(raffleAwardEntity.getSort()).build()).build();
