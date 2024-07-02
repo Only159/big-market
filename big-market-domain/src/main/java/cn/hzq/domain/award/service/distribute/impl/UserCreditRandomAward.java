@@ -3,9 +3,9 @@ package cn.hzq.domain.award.service.distribute.impl;
 import cn.hzq.domain.award.model.aggregate.GiveOutPrizesAggregate;
 import cn.hzq.domain.award.model.entity.DistributeAwardEntity;
 import cn.hzq.domain.award.model.entity.UserAwardRecordEntity;
+import cn.hzq.domain.award.model.entity.UserCreditAwardEntity;
 import cn.hzq.domain.award.model.valobj.AwardStateVO;
 import cn.hzq.domain.award.repository.IAwardRepository;
-import cn.hzq.domain.award.service.IAwardService;
 import cn.hzq.domain.award.service.distribute.IDistributeAward;
 import cn.hzq.types.common.Constants;
 import org.apache.commons.lang3.StringUtils;
@@ -46,8 +46,15 @@ public class UserCreditRandomAward implements IDistributeAward {
                 distributeAwardEntity.getOrderId(),
                 distributeAwardEntity.getAwardId(),
                 AwardStateVO.complete);
+        UserCreditAwardEntity userCreditAwardEntity = GiveOutPrizesAggregate.buildUserCreditAwardEntity(distributeAwardEntity.getUserId(), randomPoints);
 
+        GiveOutPrizesAggregate giveOutPrizesAggregate = new GiveOutPrizesAggregate();
+        giveOutPrizesAggregate.setUserId(distributeAwardEntity.getUserId());
+        giveOutPrizesAggregate.setUserCreditAwardEntity(userCreditAwardEntity);
+        giveOutPrizesAggregate.setUserAwardRecordEntity(userAwardRecordEntity);
 
+        //存储发奖对象
+        repository.saveGiveOutPrizesAggregate(giveOutPrizesAggregate);
     }
 
     /**

@@ -12,7 +12,6 @@ import cn.hzq.types.event.BaseEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
 import java.util.Map;
 
 /**
@@ -39,8 +38,10 @@ public class AwardService implements IAwardService {
         // 构建消息对象
         SendAwardMessageEvent.SendAwardMessage sendAwardMessage = new SendAwardMessageEvent.SendAwardMessage();
         sendAwardMessage.setUserId(userAwardRecordEntity.getUserId());
+        sendAwardMessage.setOrderId(userAwardRecordEntity.getOrderId());
         sendAwardMessage.setAwardId(userAwardRecordEntity.getAwardId());
         sendAwardMessage.setAwardTitle(userAwardRecordEntity.getAwardTitle());
+        sendAwardMessage.setAwardConfig(userAwardRecordEntity.getAwardConfig());
 
         BaseEvent.EventMessage<SendAwardMessageEvent.SendAwardMessage> sendAwardMessageEventMessage =
                 sendAwardMessageEvent.buildEventMessage(sendAwardMessage);
@@ -65,6 +66,20 @@ public class AwardService implements IAwardService {
 
     @Override
     public void distributeAward(DistributeAwardEntity distributeAwardEntity) {
+        // 奖品key
+        String awardKey = awardRepository.queryAwardKey(distributeAwardEntity.getAwardId());
+        if (null == awardKey) {
+            log.error("分发奖品，奖品Id不存在，查询不到awardKey，awardId:{}", distributeAwardEntity.getAwardId());
+            return;
+        }
+        IDistributeAward distributeAward = distributeAwardMap.get(awardKey);
+        if (null == distributeAward) {
+            log.error("分发奖品，对应服务不存在，awardKey：{}", awardKey);
+            // TODO 后续完善全部奖品后开启异常
+            //throw new RuntimeException("分发奖品,奖品" + awardKey + "对应服务不存在");
+            return;
+        }
+        distributeAward.giveOutPrizes(distributeAwardEntity);
 
     }
 }
