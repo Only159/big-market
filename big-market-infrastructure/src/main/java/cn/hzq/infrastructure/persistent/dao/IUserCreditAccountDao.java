@@ -10,7 +10,6 @@ import org.apache.ibatis.annotations.Mapper;
  * @Description 用户积分账户表
  **/
 @Mapper
-@DBRouterStrategy(splitTable = true)
 public interface IUserCreditAccountDao {
     int updateAddAmount(UserCreditAccount userCreditAccountReq);
 
