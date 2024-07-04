@@ -48,6 +48,8 @@
         where user_id = #{userId}
           and activity_id = #{activityId}
     </select>
+
+
     <update id="updateAccountSubtractionQuota"
             parameterType="cn.hzq.infrastructure.persistent.po.RaffleActivityAccount">
         update raffle_activity_account
@@ -79,4 +81,5 @@
         where user_id = #{userId}
           and activity_id = #{activityId}
     </update>
+
 </mapper>
