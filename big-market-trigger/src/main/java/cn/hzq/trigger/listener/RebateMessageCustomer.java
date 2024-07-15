@@ -1,6 +1,7 @@
 package cn.hzq.trigger.listener;
 
 import cn.hzq.domain.activity.model.entity.SkuRechargeEntity;
+import cn.hzq.domain.activity.model.valobj.OrderTradeTypeVO;
 import cn.hzq.domain.activity.service.IRaffleActivityAccountQuotaService;
 import cn.hzq.domain.credit.model.entity.TradeEntity;
 import cn.hzq.domain.credit.model.valobj.TradeNameVO;
@@ -53,6 +54,7 @@ public class RebateMessageCustomer {
                     SkuRechargeEntity skuRechargeEntity = new SkuRechargeEntity();
                     skuRechargeEntity.setUserId(rebateMessage.getUserId());
                     skuRechargeEntity.setSku(Long.valueOf(rebateMessage.getRebateConfig()));
+                    skuRechargeEntity.setOrderTradeType(OrderTradeTypeVO.rebate_no_pay_trade);
                     skuRechargeEntity.setOutBusinessNo(rebateMessage.getBizId());
                     // 写入账户
                     raffleActivityAccountQuotaService.createOrder(skuRechargeEntity);

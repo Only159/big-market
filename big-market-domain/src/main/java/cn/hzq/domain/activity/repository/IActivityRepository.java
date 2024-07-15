@@ -39,11 +39,17 @@ public interface IActivityRepository {
     ActivityCountEntity queryRaffleActivityCountByActivityCountId(Long activityCountId);
 
     /**
-     * 保存订单
+     * 保存无需支付订单
      *
      * @param createQuotaOrderAggregate 下单聚合对象
      */
-    void doSaveOrder(CreateQuotaOrderAggregate createQuotaOrderAggregate);
+    void doSaveNoPayOrder(CreateQuotaOrderAggregate createQuotaOrderAggregate);
+
+    /**
+     * 保存积分支付订单
+     * @param createQuotaOrderAggregate 下单聚合对象
+     */
+    void doSaveCreditPayOrder(CreateQuotaOrderAggregate createQuotaOrderAggregate);
 
     /**
      * 缓存 sku 库存
@@ -167,5 +173,19 @@ public interface IActivityRepository {
      */
     ActivityAccountEntity queryActivityAccountEntity(String userId, Long activityId);
 
+    /**
+     * 查询用户已经参加的抽奖次数
+     *
+     * @param userId     用户Id
+     * @param activityId 活动Id
+     * @return 用于已经参加的抽奖次数
+     */
     Integer queryRaffleActivityAccountPartakeCount(String userId, Long activityId);
+
+    /**
+     * 更新订单
+     * @param deliveryOrderEntity 出货单实体
+     */
+
+    void updateOrder(DeliveryOrderEntity deliveryOrderEntity);
 }

@@ -12,7 +12,7 @@ import java.util.List;
  **/
 public interface IBehaviorRebateService {
     /**
-     * 创建行文返利动作的入账订单
+     * 创建行为返利动作的入账订单
      *
      * @param behaviorEntity 行为实体对象
      * @return 订单Id

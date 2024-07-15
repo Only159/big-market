@@ -30,7 +30,7 @@ public class BehaviorRebateServiceTest {
         BehaviorEntity behaviorEntity = new BehaviorEntity();
         behaviorEntity.setUserId("hzq");
         behaviorEntity.setBehaviorTypeVO(BehaviorTypeVO.SIGN);
-        behaviorEntity.setOutBusinessNo("20240711");
+        behaviorEntity.setOutBusinessNo("20240714");
 
         List<String> orderIds = behaviorRebateService.createOrder(behaviorEntity);
         log.info("请求参数:{}", JSON.toJSONString(behaviorEntity));

@@ -1,6 +1,7 @@
 package cn.hzq.domain.activity.model.aggregate;
 
 import cn.hzq.domain.activity.model.entity.ActivityOrderEntity;
+import cn.hzq.domain.activity.model.valobj.OrderStateVO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -45,5 +46,13 @@ public class CreateQuotaOrderAggregate {
      * 活动订单实体
      */
     private ActivityOrderEntity activityOrderEntity;
+
+    /**
+     * 变更活动订单状态
+     * @param orderState 订单状态枚举
+     */
+    public void setOrderState(OrderStateVO orderState) {
+        this.activityOrderEntity.setState(orderState);
+    }
 
 }

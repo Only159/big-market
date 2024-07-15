@@ -1,6 +1,7 @@
 package cn.hzq.domain.activity.service;
 
 import cn.hzq.domain.activity.model.entity.ActivityAccountEntity;
+import cn.hzq.domain.activity.model.entity.DeliveryOrderEntity;
 import cn.hzq.domain.activity.model.entity.SkuRechargeEntity;
 
 /**
@@ -21,6 +22,12 @@ public interface IRaffleActivityAccountQuotaService {
     String createOrder(SkuRechargeEntity skuRechargeEntity);
 
     /**
+     * 更新订单
+     * @param deliveryOrderEntity 出货单实体
+     */
+    void updateOrder(DeliveryOrderEntity deliveryOrderEntity);
+
+    /**
      * 查询用户当天已经参加的抽奖次数
      *
      * @param activityId 活动Id
@@ -38,6 +45,7 @@ public interface IRaffleActivityAccountQuotaService {
      * @return 活动账户实体对象
      */
     ActivityAccountEntity queryActivityAccountEntity(String userId, Long activityId);
+
     /**
      * 查询用户已经参加的抽奖次数
      *

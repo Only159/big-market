@@ -7,12 +7,15 @@ import cn.hzq.domain.activity.model.entity.ActivitySkuEntity;
 import cn.hzq.domain.activity.model.entity.SkuRechargeEntity;
 import cn.hzq.domain.activity.repository.IActivityRepository;
 import cn.hzq.domain.activity.service.IRaffleActivityAccountQuotaService;
+import cn.hzq.domain.activity.service.quota.policy.ITradePolicy;
 import cn.hzq.domain.activity.service.quota.rule.IActionChain;
 import cn.hzq.domain.activity.service.quota.rule.factory.DefaultActivityChainFactory;
 import cn.hzq.types.enums.ResponseCode;
 import cn.hzq.types.exception.AppException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+
+import java.util.Map;
 
 /**
  * @author 黄照权
@@ -22,8 +25,11 @@ import org.apache.commons.lang3.StringUtils;
 @Slf4j
 public abstract class AbstractRaffleActivityAccountQuota extends RaffleActivityAccountQuotaSupport implements IRaffleActivityAccountQuotaService {
 
-    public AbstractRaffleActivityAccountQuota(DefaultActivityChainFactory defaultActivityChainFactory, IActivityRepository activityRepository) {
+    private final Map<String, ITradePolicy> tradePolicyGroup;
+
+    public AbstractRaffleActivityAccountQuota(DefaultActivityChainFactory defaultActivityChainFactory, IActivityRepository activityRepository, Map<String, ITradePolicy> tradePolicyGroup) {
         super(defaultActivityChainFactory, activityRepository);
+        this.tradePolicyGroup = tradePolicyGroup;
     }
 
     @Override
@@ -52,19 +58,15 @@ public abstract class AbstractRaffleActivityAccountQuota extends RaffleActivityA
         CreateQuotaOrderAggregate createQuotaOrderAggregate = buildOrderAggregate(skuRechargeEntity, activitySkuEntity, activityEntity, activityCountEntity);
 
         // 5、保存订单
-        doSaveOrder(createQuotaOrderAggregate);
+        //doSaveOrder(createQuotaOrderAggregate);
+        ITradePolicy tradePolicy = tradePolicyGroup.get(skuRechargeEntity.getOrderTradeType().getCode());
+        tradePolicy.trade(createQuotaOrderAggregate);
+
 
         // 6、返回单号
         return createQuotaOrderAggregate.getActivityOrderEntity().getOrderId();
     }
 
-    /**
-     * 保存订单
-     *
-     * @param createQuotaOrderAggregate 下单聚合对象
-     */
-
-    protected abstract void doSaveOrder(CreateQuotaOrderAggregate createQuotaOrderAggregate);
 
     /**
      * 创建订单聚合对象
