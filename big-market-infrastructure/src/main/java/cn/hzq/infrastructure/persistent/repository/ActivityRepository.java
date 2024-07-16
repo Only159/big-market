@@ -66,6 +66,49 @@ public class ActivityRepository implements IActivityRepository {
     private IUserRaffleOrderDao userRaffleOrderDao;
 
     @Override
+    public UnpaidActivityOrderEntity queryUnpaidActivityOrder(SkuRechargeEntity skuRechargeEntity) {
+        RaffleActivityOrder raffleActivityOrderReq = new RaffleActivityOrder();
+        raffleActivityOrderReq.setUserId(skuRechargeEntity.getUserId());
+        raffleActivityOrderReq.setSku(skuRechargeEntity.getSku());
+        RaffleActivityOrder raffleActivityOrderRes = raffleActivityOrderDao.queryUnpaidActivityOrder(raffleActivityOrderReq);
+        if (null == raffleActivityOrderRes) return null;
+        return UnpaidActivityOrderEntity.builder()
+                .userId(raffleActivityOrderRes.getUserId())
+                .orderId(raffleActivityOrderRes.getOrderId())
+                .outBusinessNo(raffleActivityOrderRes.getOutBusinessNo())
+                .payAmount(raffleActivityOrderRes.getPayAmount())
+                .build();
+
+    }
+
+    @Override
+    public List<SkuProductEntity> querySkuProductEntityListByActivityId(Long activityId) {
+        // 查询获得ID下所有SKU信息
+        List<RaffleActivitySku> raffleActivitySkus = raffleActivitySkuDao.queryRaffleActivitySkuListByActivityId(activityId);
+        ArrayList<SkuProductEntity> skuProductEntities = new ArrayList<>(raffleActivitySkus.size());
+        raffleActivitySkus.forEach(raffleActivitySku -> {
+            // 通过活动次数ID获取活动次数信息&数据转换
+            RaffleActivityCount raffleActivityCount = raffleActivityCountDao.queryRaffleActivityCountByActivityCountId(raffleActivitySku.getActivityCountId());
+            SkuProductEntity.ActivityCount activityCount = new SkuProductEntity.ActivityCount();
+            activityCount.setTotalCount(raffleActivityCount.getTotalCount());
+            activityCount.setMonthCount(raffleActivityCount.getMonthCount());
+            activityCount.setDayCount(raffleActivityCount.getDayCount());
+
+            //封装sku商品信息
+            skuProductEntities.add(SkuProductEntity.builder()
+                    .sku(raffleActivitySku.getSku())
+                    .activityId(raffleActivitySku.getActivityId())
+                    .activityCountId(raffleActivitySku.getActivityCountId())
+                    .stockCount(raffleActivitySku.getStockCount())
+                    .stockCountSurplus(raffleActivitySku.getStockCountSurplus())
+                    .productAmount(raffleActivitySku.getProductAmount())
+                    .activityCount(activityCount)
+                    .build());
+        });
+        return skuProductEntities;
+    }
+
+    @Override
     public ActivitySkuEntity queryActivitySkuBySku(Long sku) {
         // 优先从缓存获取
         String cacheKey = Constants.RedisKey.ACTIVITY_SKU_KEY + sku;
@@ -80,6 +123,7 @@ public class ActivityRepository implements IActivityRepository {
                 .activityCountId(raffleActivitySku.getActivityCountId())
                 .stockCount(raffleActivitySku.getStockCount())
                 .stockCountSurplus(raffleActivitySku.getStockCountSurplus())
+                .productAmount(raffleActivitySku.getProductAmount())
                 .build();
         // 存入缓存
         redisService.setValue(cacheKey, activitySkuEntity);
@@ -651,7 +695,7 @@ public class ActivityRepository implements IActivityRepository {
                 try {
                     // 1.更新订单
                     int updateCount = raffleActivityOrderDao.updateOrderComplete(raffleActivityOrderReq);
-                    if (updateCount == 1) {
+                    if (1 != updateCount) {
                         status.setRollbackOnly();
                         return 1;
                     }

@@ -21,10 +21,14 @@ public class CreditAdjustService implements ICreditAdjustService {
     @Resource
     private CreditAdjustSuccessMessageEvent creditAdjustSuccessMessageEvent;
 
+    @Override
+    public CreditAccountEntity queryUserCreditAccount(String userId) {
+        return creditRepository.queryUserCreditAccount(userId);
+    }
 
     @Override
     public String createOrder(TradeEntity tradeEntity) {
-        log.info("增加账户积分额度开始 userId:{} tradeName:{} amount:{}", tradeEntity.getUserId(), tradeEntity.getTradeName(), tradeEntity.getAmount());
+        log.info("账户积分额度调整开始 userId:{} tradeName:{} amount:{}", tradeEntity.getUserId(), tradeEntity.getTradeName(), tradeEntity.getAmount());
 
         // 1. 创建账户积分实体
         CreditAccountEntity creditAccountEntity = TradeAggregate.createCreditAccountEntity(
@@ -57,7 +61,7 @@ public class CreditAdjustService implements ICreditAdjustService {
 
         // 4. 保存积分交易订单
         creditRepository.saveUserCreditTradeOrder(tradeAggregate);
-        log.info("增加账户积分额度完成 userId:{} orderId:{}", tradeEntity.getUserId(), creditOrderEntity.getOrderId());
+        log.info("账户积分额度调整完成 userId:{} orderId:{}", tradeEntity.getUserId(), creditOrderEntity.getOrderId());
 
         return creditOrderEntity.getOrderId();
     }

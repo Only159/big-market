@@ -50,7 +50,22 @@ public class CreditRepository implements ICreditRepository {
     private EventPublisher eventPublisher;
 
 
+    @Override
+    public CreditAccountEntity queryUserCreditAccount(String userId) {
+        UserCreditAccount userCreditAccountReq = new UserCreditAccount();
+        userCreditAccountReq.setUserId(userId);
+        try {
+            dbRouter.doRouter(userId);
+            UserCreditAccount userCreditAccount = userCreditAccountDao.queryUserCreditAccount(userCreditAccountReq);
+            return CreditAccountEntity.builder()
+                    .userId(userId)
+                    .adjustAmount(userCreditAccount.getAvailableAmount())
+                    .build();
 
+        } finally {
+            dbRouter.clear();
+        }
+    }
 
     @Override
     public void saveUserCreditTradeOrder(TradeAggregate tradeAggregate) {
@@ -125,7 +140,6 @@ public class CreditRepository implements ICreditRepository {
             log.error("调整账户积分记录，发送MQ消息失败 userId: {} topic: {}", userId, task.getTopic());
             taskDao.updateTaskSendMessageFail(task);
         }
-
 
 
     }

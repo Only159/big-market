@@ -47,6 +47,7 @@ public interface IActivityRepository {
 
     /**
      * 保存积分支付订单
+     *
      * @param createQuotaOrderAggregate 下单聚合对象
      */
     void doSaveCreditPayOrder(CreateQuotaOrderAggregate createQuotaOrderAggregate);
@@ -184,8 +185,24 @@ public interface IActivityRepository {
 
     /**
      * 更新订单
+     *
      * @param deliveryOrderEntity 出货单实体
      */
 
     void updateOrder(DeliveryOrderEntity deliveryOrderEntity);
+
+    /**
+     * 查询当前活动ID下，创建的 sku 商品。「sku可以兑换活动抽奖次数」
+     *
+     * @param activityId 活动ID
+     * @return 返回sku商品集合
+     */
+    List<SkuProductEntity> querySkuProductEntityListByActivityId(Long activityId);
+
+    /**
+     * 查询用户未支付订单
+     * @param skuRechargeEntity 活动商品实体对象
+     * @return 未支付订单实体对象
+     */
+    UnpaidActivityOrderEntity queryUnpaidActivityOrder(SkuRechargeEntity skuRechargeEntity);
 }

@@ -8,15 +8,16 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 
 /**
- * @author 黄照权
- * @Date 2024/4/24
- * @Description 活动sku实体对象
- **/
+ * @Author: 黄照权
+ * @CreateTime: 2024-07-16
+ * @Description: sku商品实体对象
+ */
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ActivitySkuEntity {
+public class SkuProductEntity {
+
     /**
      * 商品sku
      */
@@ -26,7 +27,7 @@ public class ActivitySkuEntity {
      */
     private Long activityId;
     /**
-     * 活动参与次数ID；在这个活动上，一个人可参与多少次活动（总、日、月）
+     * 活动个人参与次数ID
      */
     private Long activityCountId;
     /**
@@ -41,5 +42,28 @@ public class ActivitySkuEntity {
      * 商品金额【积分】
      */
     private BigDecimal productAmount;
+
+    /**
+     * 活动配置的次数 - 购买商品后可以获得的次数
+     */
+    private ActivityCount activityCount;
+
+    @Data
+    public static class ActivityCount {
+        /**
+         * 总次数
+         */
+        private Integer totalCount;
+
+        /**
+         * 日次数
+         */
+        private Integer dayCount;
+
+        /**
+         * 月次数
+         */
+        private Integer monthCount;
+    }
 
 }

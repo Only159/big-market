@@ -32,6 +32,6 @@ public class SkuRechargeEntity {
     /**
      * 交易类型
      */
-    private OrderTradeTypeVO OrderTradeType = OrderTradeTypeVO.rebate_no_pay_trade;
+    private OrderTradeTypeVO orderTradeType = OrderTradeTypeVO.rebate_no_pay_trade;
 
 }

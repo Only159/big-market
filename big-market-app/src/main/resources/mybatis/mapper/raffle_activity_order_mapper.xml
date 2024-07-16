@@ -19,6 +19,15 @@
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
     </resultMap>
+    <select id="queryUnpaidActivityOrder" parameterType="cn.hzq.infrastructure.persistent.po.RaffleActivityOrder" resultMap="dataMap">
+        select user_id, order_id, out_business_no, pay_amount
+        from raffle_activity_order
+        where user_id = #{userId}
+          and state = 'wait_pay'
+          and order_time >= NOW() - INTERVAL 1 MONTH
+            limit 1
+
+    </select>
 
     <insert id="insert" parameterType="cn.hzq.infrastructure.persistent.po.RaffleActivityOrder">
         insert into raffle_activity_order
@@ -42,20 +51,12 @@
     </select>
     <select id="queryRaffleActivityOrder" parameterType="cn.hzq.infrastructure.persistent.po.RaffleActivityOrder"
             resultMap="dataMap">
-        select user_id,
-               sku,
-               activity_id,
-               activity_name,
-               strategy_id,
-               order_id,
-               order_time,
-               pay_amount,
-               state
+        select user_id, sku, activity_id, activity_name, strategy_id, order_id, order_time, total_count, day_count, month_count, pay_amount, state
         from raffle_activity_order
-        where user_id = #{userId}
-          and out_business_no = #{outBusinessNo}
+        where user_id = #{userId} and out_business_no = #{outBusinessNo}
+
     </select>
-    <update id="updateOrderCompleted" parameterType="cn.hzq.infrastructure.persistent.po.RaffleActivityOrder">
+    <update id="updateOrderComplete" parameterType="cn.hzq.infrastructure.persistent.po.RaffleActivityOrder">
         update raffle_activity_order
         set state       = 'completed',
             update_time = now()
