@@ -89,7 +89,7 @@ public class CreditRepository implements ICreditRepository {
             // 编程式事务
             transactionTemplate.execute(status -> {
                 try {
-                    // 1. 保存账户积分
+                    // 1. 保存账户积分，存在更新，不存在插入
                     UserCreditAccount userCreditAccount = userCreditAccountDao.queryUserCreditAccount(userCreditAccountReq);
                     if (null == userCreditAccount) {
                         userCreditAccountDao.insert(userCreditAccountReq);
